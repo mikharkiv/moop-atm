@@ -15,6 +15,11 @@ public:
     ATMMainWindow(QWidget *parent = nullptr);
     ~ATMMainWindow();
 
+private slots:
+	void on_insertCardButton_clicked();
+
+	void on_insertMoneyButton_clicked();
+
 private:
     Ui::ATMMainWindow *ui;
 };

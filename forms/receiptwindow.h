@@ -13,7 +13,12 @@ class ReceiptWindow : public QDialog
 
 public:
 	explicit ReceiptWindow(QWidget *parent = nullptr);
+
+	void setReceiptText(const QStringList& receiptText);
 	~ReceiptWindow();
+
+private slots:
+	void on_okButton_clicked();
 
 private:
 	Ui::ReceiptWindow *ui;
