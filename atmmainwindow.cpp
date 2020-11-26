@@ -5,7 +5,7 @@ ATMMainWindow::ATMMainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::ATMMainWindow)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 }
 
 ATMMainWindow::~ATMMainWindow()
