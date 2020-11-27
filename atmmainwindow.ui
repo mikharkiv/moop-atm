@@ -10,6 +10,12 @@
     <height>467</height>
    </rect>
   </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle">
    <string>ATMMainWindow</string>
   </property>
@@ -83,7 +89,20 @@
          </widget>
         </item>
         <item>
-         <widget class="QTextBrowser" name="displayTextEdit"/>
+         <widget class="QTextBrowser" name="displayTextEdit">
+          <property name="font">
+           <font>
+            <family>Lucida Console</family>
+            <pointsize>9</pointsize>
+           </font>
+          </property>
+          <property name="verticalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+          <property name="horizontalScrollBarPolicy">
+           <enum>Qt::ScrollBarAlwaysOff</enum>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
