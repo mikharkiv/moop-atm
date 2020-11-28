@@ -14,7 +14,7 @@ class ReceiptWindow : public QDialog
 public:
 	explicit ReceiptWindow(QWidget *parent = nullptr);
 
-	void setReceiptText(const QStringList& receiptText);
+	void setReceiptText(const QString& receiptText);
 	~ReceiptWindow();
 
 signals:

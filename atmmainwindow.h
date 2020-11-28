@@ -17,35 +17,38 @@ public:
     ~ATMMainWindow();
 
 	void setCanCardInsert(bool value);
-	void setCanCardEject(bool value);
 	void setCanTOMode(bool value);
 	void setCanMoneyInsert(bool value);
 	void setCanType(bool value);
 	void setCanCancel(bool value);
 	void resetInput();
 
-	void setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint, const QString& currentInput);
+	void print(const QString& message, const QList<QString>& actions = QList<QString>(), const QString typingHint = "");
 
 signals:
-	void onCardInsertClicled();
-	void onCardEjectClicled();
-	void onMoneyInsertClicled();
-	void onTOModeClicled();
+	void onCardInsertClicked();
+	void onMoneyInsertClicked();
+	void onTOModeClicked();
 
-	void onActionButtonClicled(int id);
+	void onActionButtonClicked(int id);
 
-	void onInputEntered();
-	void onCancelClicled();
+	void onInputEntered(QString& input);
+	void onCancelClicked();
 
 private slots:
 	void on_insertCardButton_clicked();
 	void on_insertMoneyButton_clicked();
-	void on_ejectCardButton_clicked();
 	void on_techModeButton_clicked();
 
 	void onKeybButtonClicked(int id);
-	void onActionButtonClicked(int id);
+	void onActionButClicked(int id);
 	
+	void on_cancelKeybButton_clicked();
+
+	void on_enterKeybButton_clicked();
+
+	void on_backspKeybButton_clicked();
+
 private:
     Ui::ATMMainWindow *ui;
 
@@ -61,10 +64,11 @@ private:
 	QString currentTypeHint;
 
 	bool canCardInsert;
-	bool canCardEject;
 	bool canTOMode;
 	bool canMoneyInsert;
 	bool canType;
 	bool canCancel;
+
+	void setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint, const QString& currentInput);
 };
 #endif // ATMMAINWINDOW_H

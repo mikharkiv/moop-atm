@@ -14,8 +14,8 @@ ReceiptWindow::~ReceiptWindow()
 	delete ui;
 }
 
-void ReceiptWindow::setReceiptText(const QStringList &receiptText) {
-	ui->receiptTextEdit->setText(receiptText.join("\n"));
+void ReceiptWindow::setReceiptText(const QString &receiptText) {
+	ui->receiptTextEdit->setText(receiptText);
 }
 
 void ReceiptWindow::on_okButton_clicked()

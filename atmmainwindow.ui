@@ -174,13 +174,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="ejectCardButton">
-        <property name="text">
-         <string>Забрати картку</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QPushButton" name="insertMoneyButton">
         <property name="text">
          <string>Вставити купюри</string>

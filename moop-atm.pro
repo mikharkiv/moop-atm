@@ -9,6 +9,9 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    actions/action.cpp \
+    actions/actions.cpp \
+    controllers/uicontroller.cpp \
     forms/cardwindow.cpp \
     forms/moneywindow.cpp \
     forms/receiptwindow.cpp \
@@ -16,7 +19,10 @@ SOURCES += \
     atmmainwindow.cpp
 
 HEADERS += \
+    actions/action.h \
+    actions/actions.h \
     atmmainwindow.h \
+    controllers/uicontroller.h \
     forms/cardwindow.h \
     forms/moneywindow.h \
     forms/receiptwindow.h

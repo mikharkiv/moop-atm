@@ -35,7 +35,7 @@ ATMMainWindow::ATMMainWindow(QWidget *parent)
 	keyboardButtons.addButton(ui->eightKeybButton, 8);
 	keyboardButtons.addButton(ui->nineKeybButton, 9);
 
-	connect(&actionsButtons, SIGNAL(buttonClicked(int)), this, SLOT(onActionButtonClicked(int)));
+	connect(&actionsButtons, SIGNAL(buttonClicked(int)), this, SLOT(onActionButClicked(int)));
 	connect(&keyboardButtons, SIGNAL(buttonClicked(int)), this, SLOT(onKeybButtonClicked(int)));
 }
 
@@ -48,12 +48,6 @@ void ATMMainWindow::setCanCardInsert(bool value)
 {
 	canCardInsert = value;
 	ui->insertCardButton->setEnabled(canCardInsert);
-}
-
-void ATMMainWindow::setCanCardEject(bool value)
-{
-	canCardEject = value;
-	ui->ejectCardButton->setEnabled(canTOMode);
 }
 
 void ATMMainWindow::setCanTOMode(bool value)
@@ -71,6 +65,7 @@ void ATMMainWindow::setCanMoneyInsert(bool value)
 void ATMMainWindow::setCanType(bool value)
 {
 	canType = value;
+	currentInput = "";
 	QListIterator<QAbstractButton*> i(keyboardButtons.buttons());
 	while (i.hasNext())
 		i.next()->setEnabled(canType);
@@ -82,6 +77,12 @@ void ATMMainWindow::setCanCancel(bool value)
 {
 	canCancel = value;
 	ui->cancelKeybButton->setEnabled(canCancel);
+}
+
+void ATMMainWindow::print(const QString &message, const QList<QString> &actions, const QString typingHint)
+{
+	currentInput = "";
+	setDisplayText(message, actions, typingHint, currentInput);
 }
 
 void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint, const QString &currInput)
@@ -161,22 +162,47 @@ void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> 
 
 void ATMMainWindow::on_insertCardButton_clicked()
 {
-	emit onMoneyInsertClicled();
+	emit onCardInsertClicked();
 }
 
 void ATMMainWindow::on_insertMoneyButton_clicked()
 {
-	emit onMoneyInsertClicled();
+	emit onMoneyInsertClicked();
 }
 
 void ATMMainWindow::onKeybButtonClicked(int id)
 {
-	emit onKeybButtonClicked(id);
+	if (canType && currentInput.length() < maxInputLen) {
+		currentInput += QString::number(id);
+		setDisplayText(currentMessage, currentActionsLabels, currentTypeHint, currentInput);
+	}
 }
 
-void ATMMainWindow::onActionButtonClicked(int id)
+void ATMMainWindow::onActionButClicked(int id)
 {
 	emit onActionButtonClicked(id);
 }
 
+void ATMMainWindow::on_cancelKeybButton_clicked()
+{
+	emit onCancelClicked();
+}
 
+void ATMMainWindow::on_enterKeybButton_clicked()
+{
+	if (canType && currentInput.length() > 0)
+		emit onInputEntered(currentInput);
+}
+
+void ATMMainWindow::on_backspKeybButton_clicked()
+{
+	if (canType && currentInput.length() > 0) {
+		currentInput = currentInput.mid(0, currentInput.length() - 1);
+		setDisplayText(currentMessage, currentActionsLabels, currentTypeHint, currentInput);
+	}
+}
+
+void ATMMainWindow::on_techModeButton_clicked()
+{
+	emit onTOModeClicked();
+}
