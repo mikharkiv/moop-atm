@@ -19,6 +19,7 @@ public:
 	void setKnownCards(QList<QString>& cards);
 
 	void showReceipt(const QString& message);
+	void printMessage(const QString& message, const QList<QString>& actions = QList<QString>(), const QString& typingHint = "");
 
 	void setMoneyInsertionEnabled(bool enabled);
 	void setTypingEnabled(bool enabled);

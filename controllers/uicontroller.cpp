@@ -34,6 +34,11 @@ void UIController::showReceipt(const QString &message)
 	rw.exec();
 }
 
+void UIController::printMessage(const QString &message, const QList<QString> &actions, const QString &typingHint)
+{
+	_mainWindow->print(message, actions, typingHint);
+}
+
 void UIController::showMoneyWindow()
 {
 	MoneyWindow w(_mainWindow->parentWidget());

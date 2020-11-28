@@ -11,6 +11,7 @@ CONFIG += c++11
 SOURCES += \
     actions/action.cpp \
     actions/actions.cpp \
+    controllers/sessioncontroller.cpp \
     controllers/uicontroller.cpp \
     forms/cardwindow.cpp \
     forms/moneywindow.cpp \
@@ -19,9 +20,11 @@ SOURCES += \
     atmmainwindow.cpp
 
 HEADERS += \
+    actions/ActionsType.h \
     actions/action.h \
     actions/actions.h \
     atmmainwindow.h \
+    controllers/sessioncontroller.h \
     controllers/uicontroller.h \
     forms/cardwindow.h \
     forms/moneywindow.h \

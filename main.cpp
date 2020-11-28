@@ -2,6 +2,8 @@
 
 #include <QApplication>
 #include "controllers/uicontroller.h"
+#include "controllers/sessioncontroller.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -9,5 +11,7 @@ int main(int argc, char *argv[])
 	ATMMainWindow w;
 	w.show();
 	UIController c(&w);
+	SessionController s(&c);
+	s.start();
     return a.exec();
 }

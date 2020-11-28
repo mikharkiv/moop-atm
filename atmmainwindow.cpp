@@ -11,7 +11,8 @@ ATMMainWindow::ATMMainWindow(QWidget *parent)
     : QMainWindow(parent)
 	, ui(new Ui::ATMMainWindow),
 	  actionsButtons(parent),
-	  keyboardButtons(parent)
+	  keyboardButtons(parent),
+	  currentInput("")
 {
 	ui->setupUi(this);
 
