@@ -17,6 +17,9 @@ public:
 	void setReceiptText(const QStringList& receiptText);
 	~ReceiptWindow();
 
+signals:
+	void onWindowClosed();
+
 private slots:
 	void on_okButton_clicked();
 

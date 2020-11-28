@@ -51,6 +51,7 @@ MoneyWindow::MoneyWindow(QWidget *parent) :
 
 MoneyWindow::~MoneyWindow()
 {
+	emit onWindowClosed();
 	delete ui;
 }
 
@@ -74,12 +75,12 @@ void MoneyWindow::checkBanknotesInserted()
 
 void MoneyWindow::on_cancelButton_clicked()
 {
-	// TODO add event dispatching
+	emit onMoneyInserted(banknotes);
 	close();
 }
 
 void MoneyWindow::on_okButton_clicked()
 {
-	// TODO add event dispatching
+	emit onWindowClosed();
 	close();
 }

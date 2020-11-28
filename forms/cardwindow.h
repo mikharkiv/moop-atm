@@ -20,6 +20,10 @@ public:
 	void setMinCardNumLength(int minLen);
 	void setMaxCardNumLength(int maxLen);
 
+signals:
+	void onWindowClosed();
+	void onCardChosen(QString cardNum);
+
 private slots:
 	void on_okButton_clicked();
 	void on_cancelButton_clicked();

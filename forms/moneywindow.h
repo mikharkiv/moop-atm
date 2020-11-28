@@ -18,6 +18,10 @@ public:
 	explicit MoneyWindow(QWidget *parent = nullptr);
 	~MoneyWindow();
 
+signals:
+	void onWindowClosed();
+	void onMoneyInserted(QMap<int, int> money);
+
 private slots:
 	void onInsertButtonClicked(int id);
 

@@ -24,20 +24,41 @@ public:
 	void setCanCancel(bool value);
 	void resetInput();
 
-	void setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint);
+	void setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint, const QString& currentInput);
+
+signals:
+	void onCardInsertClicled();
+	void onCardEjectClicled();
+	void onMoneyInsertClicled();
+	void onTOModeClicled();
+
+	void onActionButtonClicled(int id);
+
+	void onInputEntered();
+	void onCancelClicled();
 
 private slots:
 	void on_insertCardButton_clicked();
-
 	void on_insertMoneyButton_clicked();
+	void on_ejectCardButton_clicked();
+	void on_techModeButton_clicked();
 
+	void onKeybButtonClicked(int id);
+	void onActionButtonClicked(int id);
+	
 private:
     Ui::ATMMainWindow *ui;
+
+	int maxInputLen = 20;
 
 	QButtonGroup actionsButtons;
 	QButtonGroup keyboardButtons;
 
 	QString currentInput;
+	
+	QString currentMessage;
+	QList<QString> currentActionsLabels;
+	QString currentTypeHint;
 
 	bool canCardInsert;
 	bool canCardEject;

@@ -25,6 +25,7 @@ CardWindow::CardWindow(QWidget *parent) :
 
 CardWindow::~CardWindow()
 {
+	emit onWindowClosed();
 	delete ui;
 }
 
@@ -54,13 +55,13 @@ void CardWindow::setMaxCardNumLength(int maxLen)
 
 void CardWindow::on_okButton_clicked()
 {
-	// TODO add event dispatching
+	emit onCardChosen(ui->cardNumEdit->text());
 	close();
 }
 
 void CardWindow::on_cancelButton_clicked()
 {
-	// TODO add event dispatching
+	emit onWindowClosed();
 	close();
 }
 

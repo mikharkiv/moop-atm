@@ -10,6 +10,7 @@ ReceiptWindow::ReceiptWindow(QWidget *parent) :
 
 ReceiptWindow::~ReceiptWindow()
 {
+	emit onWindowClosed();
 	delete ui;
 }
 
@@ -19,5 +20,6 @@ void ReceiptWindow::setReceiptText(const QStringList &receiptText) {
 
 void ReceiptWindow::on_okButton_clicked()
 {
+	emit onWindowClosed();
 	close();
 }

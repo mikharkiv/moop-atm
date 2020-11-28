@@ -34,6 +34,9 @@ ATMMainWindow::ATMMainWindow(QWidget *parent)
 	keyboardButtons.addButton(ui->sevenKeybButton, 7);
 	keyboardButtons.addButton(ui->eightKeybButton, 8);
 	keyboardButtons.addButton(ui->nineKeybButton, 9);
+
+	connect(&actionsButtons, SIGNAL(buttonClicked(int)), this, SLOT(onActionButtonClicked(int)));
+	connect(&keyboardButtons, SIGNAL(buttonClicked(int)), this, SLOT(onKeybButtonClicked(int)));
 }
 
 ATMMainWindow::~ATMMainWindow()
@@ -81,7 +84,7 @@ void ATMMainWindow::setCanCancel(bool value)
 	ui->cancelKeybButton->setEnabled(canCancel);
 }
 
-void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint)
+void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint, const QString &currInput)
 {
 	/* The main idea: fit text in TextEdit in a special way, that action labels will be next to the action
 	*  buttons, and display message will be in the rest of the space
@@ -125,7 +128,7 @@ void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> 
 	for (int i = 0; i < (maxMessageRows - messageRows); ++i)
 		result += "\n";
 	if (canType)
-		result += "\n" + typingHint + "\n\n\n"; // TODO save position to type at
+		result += "\n" + typingHint + "\n" + currInput + "\n\n"; // TODO save position to type at
 	else
 		result += "\n\n\n\n\n";
 	QList<QString> resActionsTexts = QList<QString>();
@@ -156,15 +159,24 @@ void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> 
 	ui->displayTextEdit->setText(result);
 }
 
-// TODO for test
 void ATMMainWindow::on_insertCardButton_clicked()
 {
-
+	emit onMoneyInsertClicled();
 }
 
-// TODO for test
 void ATMMainWindow::on_insertMoneyButton_clicked()
 {
-	MoneyWindow w(parentWidget());
-	w.exec();
+	emit onMoneyInsertClicled();
 }
+
+void ATMMainWindow::onKeybButtonClicked(int id)
+{
+	emit onKeybButtonClicked(id);
+}
+
+void ATMMainWindow::onActionButtonClicked(int id)
+{
+	emit onActionButtonClicked(id);
+}
+
+
