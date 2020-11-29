@@ -2,27 +2,9 @@
 #define BANK_H
 
 #include "account.h"
+#include "bankresponse.h"
 #include "dbcontroller.h"
 #include <QString>
-
-enum ResponseStatus {
-    OK, NOT_FOUND, ERROR, NOT_ENOUGH
-};
-
-template<class Value>
-struct BankResponse {
-    const ResponseStatus status;
-    const Value value;
-    BankResponse(const Value& val) : status(ResponseStatus::OK), value(val) {}
-    BankResponse(const ResponseStatus resp) : status(resp), value(Value()) {}
-    BankResponse(Value&& val) : status(ResponseStatus::OK), value(val) {}
-};
-
-template <>
-struct BankResponse<ResponseStatus> {
-    const ResponseStatus status;
-    BankResponse(const ResponseStatus s) : status(s){}
-};
 
 class Bank
 {

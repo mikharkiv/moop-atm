@@ -7,8 +7,12 @@ Bank::Bank() : _db(DBController())
 
 BankResponse<Account> Bank::getAccount(QString id)
 {
-    Account acc = _db.getAccount(id);
-    return BankResponse<Account>(acc);
+    try {
+        Account acc = _db.getAccount(id);
+        return BankResponse<Account>(acc);
+    }  catch (DBController::NotFoundException &e) {
+        return BankResponse<Account>(NOT_FOUND);
+    }
 }
 
 BankResponse<ResponseStatus> Bank::createAccount(const Account &acc)
@@ -18,50 +22,75 @@ BankResponse<ResponseStatus> Bank::createAccount(const Account &acc)
 
 BankResponse<double> Bank::withdraw(QString id, const double amount)
 {
-    Account acc = _db.getAccount(id);
-    double bal = acc.balance();
-    if (bal < amount)
-        return BankResponse<double>(NOT_ENOUGH);
-    acc.setBalance(bal - amount);
-    _db.updateAccount(acc);
-    return BankResponse<double>(acc.balance());
+    try {
+        Account acc = _db.getAccount(id);
+        double bal = acc.balance();
+        if (bal < amount)
+            return BankResponse<double>(NOT_ENOUGH);
+        acc.setBalance(bal - amount);
+        _db.updateAccount(acc);
+        return BankResponse<double>(acc.balance());
+    }   catch (DBController::NotFoundException &e) {
+        return BankResponse<double>(NOT_FOUND);
+    }
+
 }
 
 BankResponse<double> Bank::top_up(QString id, const double amount)
 {
-    Account acc = _db.getAccount(id);
-    double bal = acc.balance();
-    acc.setBalance(bal + amount);
-    _db.updateAccount(acc);
-    return BankResponse<double>(acc.balance());
+    try {
+        Account acc = _db.getAccount(id);
+        double bal = acc.balance();
+        acc.setBalance(bal + amount);
+        _db.updateAccount(acc);
+        return BankResponse<double>(acc.balance());
+    }  catch (DBController::NotFoundException &e) {
+        return BankResponse<double>(NOT_FOUND);
+    }
 }
 
 BankResponse<ResponseStatus> Bank::block(QString id)
 {
-    Account acc = _db.getAccount(id);
-    acc.setBlocked(true);
-    _db.updateAccount(acc);
-    return BankResponse<ResponseStatus>(OK);
+    try {
+        Account acc = _db.getAccount(id);
+        acc.setBlocked(true);
+        _db.updateAccount(acc);
+        return BankResponse<ResponseStatus>(OK);
+    }  catch (DBController::NotFoundException &e) {
+        return BankResponse<ResponseStatus>(NOT_FOUND);
+    }
 }
 
 BankResponse<ResponseStatus> Bank::unblock(QString id)
 {
-    Account acc = _db.getAccount(id);
-    acc.setBlocked(false);
-    _db.updateAccount(acc);
-    return BankResponse<ResponseStatus>(OK);
+    try {
+        Account acc = _db.getAccount(id);
+        acc.setBlocked(false);
+        _db.updateAccount(acc);
+        return BankResponse<ResponseStatus>(OK);
+    }  catch (DBController::NotFoundException &e) {
+        return BankResponse<ResponseStatus>(NOT_FOUND);
+    }
 }
 
 BankResponse<bool> Bank::checkPin(QString id, QString pin)
 {
-    Account acc = _db.getAccount(id);
-    return BankResponse<bool>(acc.pin() == pin);
+    try {
+        Account acc = _db.getAccount(id);
+        return BankResponse<bool>(acc.pin() == pin);
+    }  catch (DBController::NotFoundException &e) {
+        return BankResponse<bool>(NOT_FOUND);
+    }
 }
 
 BankResponse<ResponseStatus> Bank::setPin(QString id, QString newPin)
 {
-    Account acc = _db.getAccount(id);
-    acc.setPin(newPin);
-    _db.updateAccount(acc);
-    return BankResponse<ResponseStatus>(OK);
+    try {
+        Account acc = _db.getAccount(id);
+        acc.setPin(newPin);
+        _db.updateAccount(acc);
+        return BankResponse<ResponseStatus>(OK);
+    } catch (DBController::NotFoundException &e) {
+        return BankResponse<ResponseStatus>(NOT_FOUND);
+    }
 }

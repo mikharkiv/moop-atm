@@ -13,6 +13,7 @@ SOURCES += \
     account.cpp \
     bank.cpp \
     dbcontroller.cpp \
+    localmediator.cpp \
     main.cpp \
     atmmainwindow.cpp
 
@@ -20,7 +21,10 @@ HEADERS += \
     account.h \
     atmmainwindow.h \
     bank.h \
-    dbcontroller.h
+    bankresponse.h \
+    dbcontroller.h \
+    imediator.h \
+    localmediator.h
 
 FORMS += \
     atmmainwindow.ui

@@ -4,7 +4,6 @@
 
 #include <QtSql>
 
-
 class DBController
 {
     QSqlDatabase _db;
@@ -15,6 +14,7 @@ public:
     bool addAccount(const Account& acc);
     bool updateAccount(const Account& acc);
     Account getAccount(const QString& num);
+    class NotFoundException {};
 };
 
 #endif // DBCONTROLLER_H

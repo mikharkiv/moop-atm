@@ -68,7 +68,8 @@ Account DBController::getAccount(const QString& num)
                      "WHERE card_number = ?");
     getQuery.bindValue(0, num);
     getQuery.exec();
-    getQuery.first();
+    if (!getQuery.first())
+        throw NotFoundException();
     QString card_num = getQuery.value(0).toString();
     QDateTime exp = QDateTime::fromSecsSinceEpoch(getQuery.value(1).toUInt());
     bool blocked = getQuery.value(2) == "1";
