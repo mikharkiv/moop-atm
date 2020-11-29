@@ -19,7 +19,7 @@ public:
 	void setCanCardInsert(bool value);
 	void setCanTOMode(bool value);
 	void setCanMoneyInsert(bool value);
-	void setCanType(bool value);
+	void setCanType(bool value, bool hidden = false);
 	void setCanCancel(bool value);
 	void resetInput();
 
@@ -68,6 +68,7 @@ private:
 	bool canMoneyInsert;
 	bool canType;
 	bool canCancel;
+	bool isTypingHidden;
 
 	void setDisplayText(const QString &message, const QList<QString> &actionsTexts, const QString &typingHint, const QString& currentInput);
 };

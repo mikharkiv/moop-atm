@@ -75,12 +75,12 @@ void MoneyWindow::checkBanknotesInserted()
 
 void MoneyWindow::on_cancelButton_clicked()
 {
-	emit onMoneyInserted(banknotes);
+	emit onWindowClosed();
 	close();
 }
 
 void MoneyWindow::on_okButton_clicked()
 {
-	emit onWindowClosed();
+	emit onMoneyInserted(banknotes);
 	close();
 }

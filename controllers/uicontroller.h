@@ -22,7 +22,7 @@ public:
 	void printMessage(const QString& message, const QList<QString>& actions = QList<QString>(), const QString& typingHint = "");
 
 	void setMoneyInsertionEnabled(bool enabled);
-	void setTypingEnabled(bool enabled);
+	void setTypingEnabled(bool enabled, bool hidden = false);
 	void setCancelingEnabled(bool enabled);
 	void setTOModeEnabled(bool enabled);
 	void setCardInsertionEnabled(bool enabled);
@@ -43,7 +43,7 @@ private slots:
 	void onMainWinActionButClicked(int id);
 	void onMainWinInputEntered(QString& input);
 
-	void onCWinCardChosen(QString& cardNum);
+	void onCWinCardChosen(QString cardNum);
 	void onCWinClosed();
 
 	void onMoneyWinMoneyInserted(QMap<int,int>& money);

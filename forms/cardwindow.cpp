@@ -78,6 +78,6 @@ void CardWindow::onKnownCardButtonClicked(int id)
 
 void CardWindow::checkCardNumber()
 {
-	ui->okButton->setEnabled(ui->cardNumEdit->text().length() > minCardNumLength &&
-			ui->cardNumEdit->text().length() < maxCardNumLength);
+	ui->okButton->setEnabled(ui->cardNumEdit->text().length() >= minCardNumLength &&
+			ui->cardNumEdit->text().length() <= maxCardNumLength);
 }

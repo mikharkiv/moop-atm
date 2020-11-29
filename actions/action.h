@@ -3,7 +3,7 @@
 
 #include <QObject>
 #include "ActionsType.h"
-//#include "controllers/uicontroller.h"
+#include "controllers/uicontroller.h"
 //#include "controllers/sessioncontroller.h"
 
 enum UIActionType : int {
@@ -27,6 +27,7 @@ public:
 	const QString formatHint(std::vector<QString> params);
 
 	virtual void setupForUI(UIController* uc, SessionController* sc) = 0;
+	void setupUI(UIController* uc, SessionController* sc);
 
 	virtual void beforeAction() = 0;
 	virtual void actionPerformed(UIActionType actionType, const QString& param = "") = 0;
@@ -34,6 +35,8 @@ public:
 
 	int getCancelAction();
 	int getEnterAction();
+
+	bool isPinRestricted();
 
 
 protected:
@@ -44,6 +47,7 @@ protected:
 	bool _canInsertMoney;
 	bool _canInsertCard;
 	bool _canEnterTO;
+	bool _isPinRestricted;
 
 	QList<QString> _actionsLabels;
 	QString _receiptMessage;

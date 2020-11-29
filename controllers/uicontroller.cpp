@@ -10,10 +10,6 @@ UIController::UIController(ATMMainWindow* mainWindow):
 	_cardWindow(nullptr),
 	_knownCards(QList<QString>())
 {
-	// for test
-	{
-		showReceipt("Hello world!");
-	}
 	connectMainWindow();
 }
 
@@ -51,6 +47,8 @@ void UIController::showMoneyWindow()
 void UIController::showCardWindow(QList<QString>& knownCards)
 {
 	CardWindow w(_mainWindow->parentWidget());
+	w.setMinCardNumLength(10);
+	w.setMaxCardNumLength(11);
 	w.setKnownCards(knownCards);
 	_cardWindow = &w;
 	connectCardWindow();
@@ -64,9 +62,9 @@ void UIController::setMoneyInsertionEnabled(bool enabled)
 	_mainWindow->setCanMoneyInsert(enabled);
 }
 
-void UIController::setTypingEnabled(bool enabled)
+void UIController::setTypingEnabled(bool enabled, bool hidden)
 {
-	_mainWindow->setCanType(enabled);
+	_mainWindow->setCanType(enabled, hidden);
 }
 
 void UIController::setCancelingEnabled(bool enabled)
@@ -102,7 +100,7 @@ void UIController::connectMoneyWindow()
 
 void UIController::connectCardWindow()
 {
-	connect(_cardWindow, SIGNAL(onCardChosen(QString&)), this, SLOT(onCWinCardChosen(QString&)));
+	connect(_cardWindow, SIGNAL(onCardChosen(QString)), this, SLOT(onCWinCardChosen(QString)));
 	connect(_cardWindow, SIGNAL(onWindowClosed()), this, SLOT(onCWinClosed()));
 
 }
@@ -137,14 +135,14 @@ void UIController::onMainWinInputEntered(QString &input)
 	emit onInput(input);
 }
 
-void UIController::onCWinCardChosen(QString &cardNum)
+void UIController::onCWinCardChosen(QString cardNum)
 {
 	emit onCardChosen(cardNum);
 }
 
 void UIController::onCWinClosed()
 {
-
+	// HAHA that was a joke lol
 }
 
 void UIController::onMoneyWinMoneyInserted(QMap<int, int> &money)

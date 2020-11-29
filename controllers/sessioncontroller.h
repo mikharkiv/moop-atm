@@ -14,7 +14,28 @@ class SessionController : public QObject
 public:
 	SessionController(UIController* uc);
 	~SessionController();
-	void start();
+
+	void setupForAction(Action* a);
+	const QString getCurrentCard();
+
+	bool checkPin(const QString& pin);
+	bool checkCardExpired(const QString& card);
+	bool checkCardExists(const QString& card);
+	bool checkCardBlocked(const QString& card);
+	bool hasEnoughMoney(int sum);
+	bool canGiveSum(int sum);
+	int getBalance();
+	const QString changePIN();
+
+	void blockCard(const QString& card);
+	void addBanknotes(const QMap<int,int>& banknotes);
+	void addBalance(int sum);
+	void giveCash(int sum);
+	void transferMoney(int sum, const QString& card);
+
+	void reset();
+	void placeToMemory(const QString& data);
+	const QString takeFromMemory();
 
 public slots:
 	void onTOMode();
@@ -28,7 +49,20 @@ private:
 	UIController* _uc;
 	Action* _currAction;
 
+	enum States : int {
+		IDLE,
+		PIN_CHECKING,
+		PIN_WRONG,
+	};
+
+	States _state;
+	QString _currCard;
+	int _currPinAttempts;
+	int _maxPinAttempts;
+	QList<QString> _memory;
+
 	void connectUI();
+	void providePinChecking();
 };
 
 #endif // SESSIONCONTROLLER_H

@@ -12,6 +12,5 @@ int main(int argc, char *argv[])
 	w.show();
 	UIController c(&w);
 	SessionController s(&c);
-	s.start();
     return a.exec();
 }

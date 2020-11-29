@@ -63,8 +63,9 @@ void ATMMainWindow::setCanMoneyInsert(bool value)
 	ui->insertMoneyButton->setEnabled(canMoneyInsert);
 }
 
-void ATMMainWindow::setCanType(bool value)
+void ATMMainWindow::setCanType(bool value, bool hidden)
 {
+	isTypingHidden = hidden;
 	canType = value;
 	currentInput = "";
 	QListIterator<QAbstractButton*> i(keyboardButtons.buttons());
@@ -92,6 +93,10 @@ void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> 
 	*  buttons, and display message will be in the rest of the space
 	*/
 	// setup defaults
+	currentMessage = message;
+	currentActionsLabels = actionsTexts;
+	currentTypeHint = typingHint;
+
 	QFontMetrics metrics(ui->displayTextEdit->font());
 	QString leftActionsBegin = " > ";
 	QString rightActionsBegin = " < ";
@@ -123,20 +128,21 @@ void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> 
 	if (!curIterated.isEmpty()) msgSplitted.append(curIterated); // don't forget about last line!
 	for (int i = 0; i < (std::min(msgSplitted.length(), maxMessageRows)); ++i)
 		result += msgSplitted.at(i) + "\n";
-	result = result.mid(0, result.length() - 2); // remove last \n
+	result = result.mid(0, result.length() - 1); // remove last \n
 	int messageRows = message.length() / charsPerRow + 1;
 
 
 	for (int i = 0; i < (maxMessageRows - messageRows); ++i)
 		result += "\n";
 	if (canType)
-		result += "\n" + typingHint + "\n" + currInput + "\n\n"; // TODO save position to type at
+		result += "\n" + typingHint + "\n" + (isTypingHidden ? QString("*").repeated(currentInput.length()) : currInput) + "\n\n"; // TODO save position to type at
 	else
 		result += "\n\n\n\n\n";
 	QList<QString> resActionsTexts = QList<QString>();
 	for (int i = 0; i < actionsCount; ++i) {
 		bool isLeftAction = (i < actionsCount / 2);
-		QString currActText = (isLeftAction ? leftActionsBegin : actionsMiddleSpacer);
+		bool isValid = actionsTexts.length() > i;
+		QString currActText = (isLeftAction ? (isValid ? leftActionsBegin : "   ") : actionsMiddleSpacer);
 		QString actLbl;
 		if (actionsTexts.length() > i) {
 			actLbl = actionsTexts.at(i);
@@ -148,9 +154,12 @@ void ATMMainWindow::setDisplayText(const QString &message, const QList<QString> 
 			currActText += " ";
 		if (!isLeftAction) {
 			currActText += actLbl; // add our line after spacing if right
-			currActText += rightActionsBegin;
+			currActText += (isValid ? rightActionsBegin : "   ");
 		}
 		resActionsTexts.append(currActText);
+
+		// disable buttons
+		actionsButtons.buttons().at(i)->setEnabled(isValid);
 	}
 	int halfsize = resActionsTexts.length() / 2;
 	for (int i = 0; i < resActionsTexts.length() / 2; ++i) {

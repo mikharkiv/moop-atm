@@ -7,6 +7,7 @@ Action::Action(int type, QList<int> nextActions, int enterAction, int cancelActi
 	_canInsertMoney(false),
 	_canInsertCard(false),
 	_canEnterTO(false),
+	_isPinRestricted(false),
 	_actionsLabels(QList<QString>()),
 	_receiptMessage(""),
 	_message(""),
@@ -30,6 +31,18 @@ const QString Action::formatHint(std::vector<QString> params)
 	return formatString(_typingHint, params);
 }
 
+void Action::setupUI(UIController *uc, SessionController *sc)
+{
+	_uc = uc;
+	_sc = sc;
+
+	_uc->setMoneyInsertionEnabled(_canInsertMoney);
+	_uc->setCardInsertionEnabled(_canInsertCard);
+	_uc->setTOModeEnabled(_canEnterTO);
+	_uc->setTypingEnabled(_canType);
+	_uc->setCancelingEnabled(_canCancel);
+}
+
 int Action::getCancelAction()
 {
 	return _cancelAction;
@@ -38,6 +51,11 @@ int Action::getCancelAction()
 int Action::getEnterAction()
 {
 	return _enterAction;
+}
+
+bool Action::isPinRestricted()
+{
+	return _isPinRestricted;
 }
 
 QString Action::formatString(QString &needle, std::vector<QString> params)

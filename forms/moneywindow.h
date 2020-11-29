@@ -20,7 +20,7 @@ public:
 
 signals:
 	void onWindowClosed();
-	void onMoneyInserted(QMap<int, int> money);
+	void onMoneyInserted(QMap<int, int>& money);
 
 private slots:
 	void onInsertButtonClicked(int id);
