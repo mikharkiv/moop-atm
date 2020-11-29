@@ -1,14 +1,18 @@
 #include "sessioncontroller.h"
+#include "atm.h"
+#include "actions/toactions.h"
 #include <QDebug>
 
-SessionController::SessionController(UIController* c):
+SessionController::SessionController(UIController* c, ATM* atm):
 	QObject(),
+	_atm(atm),
 	_uc(c),
 	_state(States::IDLE),
 	_currPinAttempts(0),
 	_maxPinAttempts(3),
 	_currCard(""),
-	_memory(QList<QString>())
+	_memory(QList<QString>()),
+	_toPin("83765093")
 {
 	connectUI();
 	setupForAction(new MainMenuAction());
@@ -17,25 +21,47 @@ SessionController::SessionController(UIController* c):
 SessionController::~SessionController() {}
 
 void SessionController::onTOMode() {
-	// TODO TO MODE
+	reset(true);
 }
 
 void SessionController::onInput(QString &input)
 {
 	if (_state == States::PIN_CHECKING) {
 		if (checkPin(input)) {
-			_state = States::IDLE;
+			if (checkCardBlocked(_currCard)) {
+				_state = States::PIN_WRONG;
+				_uc->printMessage("Картку заблоковано", QList<QString>() << "Ок");
+			} else if (checkCardExpired(_currCard)) {
+				_state = States::PIN_WRONG;
+				_uc->printMessage("Сплив термін дії картки", QList<QString>() << "Ок");
+			} else {
+				_state = States::IDLE;
+				_currPinAttempts = 0;
+				_currAction->setupForUI(_uc, this);
+			}
+		} else {
+			_currPinAttempts += 1;
+			if (_currPinAttempts >= _maxPinAttempts) {
+				blockCard(_currCard);
+				_uc->printMessage("Через перевищення спроб введення ПІН вашу картку заблоковано. Зверніться до співробітника банку", QList<QString>() << "Ок");
+				_uc->setTypingEnabled(false);
+				_state = States::PIN_WRONG;
+			} else {
+				_uc->printMessage(QString("Введено неправильний ПІН. Залишилось %1 спроб").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
+			}
+		}
+	} else if (_state == States::TO_PIN_CHECKING) {
+		if (checkPin(input)) {
+			_state = States::TO_IDLE;
 			_currPinAttempts = 0;
 			_currAction->setupForUI(_uc, this);
 		} else {
 			_currPinAttempts += 1;
 			if (_currPinAttempts >= _maxPinAttempts) {
-				// TODO get card blocked action
-				_uc->printMessage("Через перевищення спроб введення ПІН вашу картку заблоковано. Зверніться до співробітника банку");
+				_uc->printMessage("Через перевищення спроб введення ПІН технічного спеціаліста режим заблоковано");
 				_uc->setTypingEnabled(false);
-				// TODO card blocking
 			} else {
-				_uc->printMessage(QString("Введено неправильний ПІН. Залишилось %1 спроб").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
+				_uc->printMessage(QString("Введено неправильний ПІН. Залишилось %1 спроб").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код технічного спеціаліста:");
 			}
 		}
 	} else {
@@ -46,7 +72,10 @@ void SessionController::onInput(QString &input)
 void SessionController::onMoneyInsert(QMap<int, int> &money)
 {
 	addBanknotes(money);
-	_currAction->actionPerformed(UIActionType::MONEY_INSERTED, "100");
+	int res = 0;
+	for (int i = 0; i < money.keys().length(); ++i)
+		res += money.keys().at(i) * money[money.keys().at(i)];
+	_currAction->actionPerformed(UIActionType::MONEY_INSERTED, QString::number(res));
 }
 
 void SessionController::onCardChosen(QString &cardNumber)
@@ -62,7 +91,10 @@ void SessionController::onCancelClicked()
 
 void SessionController::onActionClicked(int id)
 {
-	_currAction->actionPerformed(UIActionType::ACTION_CLICKED, QString::number(id));
+	if (_state == States::PIN_WRONG)
+		reset(false);
+	else
+		_currAction->actionPerformed(UIActionType::ACTION_CLICKED, QString::number(id));
 }
 
 void SessionController::connectUI()
@@ -77,84 +109,115 @@ void SessionController::connectUI()
 
 void SessionController::providePinChecking()
 {
-	_state = States::PIN_CHECKING;
 	_uc->setTypingEnabled(true, true);
-	_uc->printMessage(QString("Необхідна перевірка ПІН. Залишилось %1 спроби ").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
+	_uc->setTOModeEnabled(false);
+	_uc->setCardInsertionEnabled(false);
+	if (_state == States::TO_IDLE) {
+		_state = States::TO_PIN_CHECKING;
+	_uc->printMessage(QString("Необхідна перевірка ПІН технічного спеціаліста. Залишилось %1 спроби ").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код технічного спеціаліста:");
+	} else {
+		_state = States::PIN_CHECKING;
+		if (!checkCardExists(_currCard)) {
+			_state = States::PIN_WRONG;
+			_uc->printMessage("Картки не існує", QList<QString>() << "Ок");
+		} else {
+			_uc->printMessage(QString("Необхідна перевірка ПІН. Залишилось %1 спроби ").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
+		}
+	}
 	_currPinAttempts = 0;
 }
 
 bool SessionController::checkPin(const QString &pin)
 {
-	return pin == "1234"; // TODO
+	if (_state == States::TO_PIN_CHECKING)
+		return pin == _toPin;
+	else
+		return _atm->checkPIN(_currCard, pin);
 }
 
 bool SessionController::checkCardExpired(const QString &card)
 {
-	return false;
+	return _atm->isCardExpired(card);
 }
 
 bool SessionController::checkCardExists(const QString &card)
 {
-	return true;
+	return _atm->cardExists(card);
 }
 
 bool SessionController::checkCardBlocked(const QString &card)
 {
-	return false;
+	return _atm->isCardBlocked(card);
 }
 
 bool SessionController::hasEnoughMoney(int sum)
 {
-	return true;
+	return _atm->getBalance(_currCard) >= sum;
 }
 
 bool SessionController::canGiveSum(int sum)
 {
-	return true;
+	return _atm->canWithdrawSum(sum);
 }
 
 int SessionController::getBalance()
 {
-	return 100; // TODO
+	return _atm->getBalance(_currCard);
 }
 
 const QString SessionController::changePIN()
 {
-	return "1234";
+	return _atm->changePIN(_currCard);
 }
 
 void SessionController::blockCard(const QString &card)
 {
-	// TODO
+	_atm->blockCard(card);
+}
+
+void SessionController::unblockCard(const QString &card)
+{
+	_atm->unblockCard(card);
+}
+
+const QString SessionController::createCard(const QString &card)
+{
+	return _atm->createCard(card);
 }
 
 void SessionController::addBanknotes(const QMap<int, int> &banknotes)
 {
-	// TODO
+	_atm->addBanknotes(banknotes);
 }
 
 void SessionController::addBalance(int sum)
 {
-	// TODO
+	_atm->addBalance(sum, _currCard);
 }
 
 void SessionController::giveCash(int sum)
 {
-	// TODO
+	_atm->withdrawBanknotes(sum);
 }
 
 void SessionController::transferMoney(int sum, const QString &card)
 {
-	// TODO
+	_atm->subtractBalance(sum, _currCard);
+	_atm->addBalance(sum, card);
 }
 
-void SessionController::reset()
+void SessionController::reset(bool toMode)
 {
 	_memory.clear();
 	_currCard = "";
-	_state = States::IDLE;
 	_currPinAttempts = 0;
-	setupForAction(new MainMenuAction());
+	if (toMode) {
+		_state = States::TO_IDLE;
+		setupForAction(new TOMenuAction());
+	} else {
+		_state = States::IDLE;
+		setupForAction(new MainMenuAction());
+	}
 }
 
 void SessionController::placeToMemory(const QString &data) {

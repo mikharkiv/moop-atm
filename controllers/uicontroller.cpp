@@ -47,8 +47,8 @@ void UIController::showMoneyWindow()
 void UIController::showCardWindow(QList<QString>& knownCards)
 {
 	CardWindow w(_mainWindow->parentWidget());
-	w.setMinCardNumLength(10);
-	w.setMaxCardNumLength(11);
+	w.setMinCardNumLength(0);
+	w.setMaxCardNumLength(30);
 	w.setKnownCards(knownCards);
 	_cardWindow = &w;
 	connectCardWindow();

@@ -6,7 +6,8 @@ MoneyWindow::MoneyWindow(QWidget *parent) :
 	ui(new Ui::MoneyWindow),
 	banknotes(QMap<int, int>()),
 	insertButtons(parent),
-	insertedLabels(QList<QLabel*>())
+	insertedLabels(QList<QLabel*>()),
+	_butvals(new int[10]{1,2,5,10,20,50,100,200,500,1000})
 {
 	ui->setupUi(this);
 	ui->okButton->setEnabled(false);
@@ -56,8 +57,8 @@ MoneyWindow::~MoneyWindow()
 }
 
 void MoneyWindow::onInsertButtonClicked(int id) {
-	banknotes[id] += 1;
-	insertedLabels.at(id)->setText(QString::number(banknotes[id]));
+	banknotes[_butvals[id]] += 1;
+	insertedLabels.at(id)->setText(QString::number(banknotes[_butvals[id]]));
 	checkBanknotesInserted();
 }
 

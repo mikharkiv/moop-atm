@@ -2,26 +2,9 @@
 #include "controllers/sessioncontroller.h"
 #include "controllers/uicontroller.h"
 
-TestAction::TestAction() :
-	Action(ActionType::CASH_ADD_ADDED) {
-	_isPinRestricted = true;
-}
-TestAction::~TestAction() {}
-void TestAction::beforeAction() {
-	_uc->printMessage("Test action setted up!");
-}
-void TestAction::afterAction() {}
-void TestAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-	beforeAction();
-}
-void TestAction::actionPerformed(UIActionType actionType, const QString &param) {
-	if (actionType == UIActionType::ACTION_CLICKED)
-		_uc->printMessage("Test action works!");
-}
-
 MainMenuAction::MainMenuAction(): Action(ActionType::MAIN_MENU) {
 	_canInsertCard = true;
+	_canEnterTO = true;
 	_message = "Банкомат вітає вас. Вставте картку для виконання операцій";
 }
 MainMenuAction::~MainMenuAction() {}
@@ -279,6 +262,7 @@ void MoneyTransferFirstAction::actionPerformed(UIActionType actionType, const QS
 
 MoneyTransferSecondAction::MoneyTransferSecondAction(): Action(ActionType::MONEY_TRANSFER_MENU2) {
 	_message = "Введіть номер картки";
+	_canType = true;
 }
 MoneyTransferSecondAction::~MoneyTransferSecondAction() {}
 void MoneyTransferSecondAction::beforeAction() {
@@ -393,7 +377,7 @@ void WorkFinishedAction::setupForUI(UIController *uc, SessionController *sc) {
 }
 void WorkFinishedAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED)
-		_sc->reset();
+		_sc->reset(false);
 }
 
 //

@@ -5,6 +5,7 @@
 #include "actions/actions.h"
 #include "uicontroller.h"
 
+class ATM;
 class SessionController : public QObject
 {
 	Q_OBJECT
@@ -12,7 +13,7 @@ class SessionController : public QObject
 	friend class Action;
 
 public:
-	SessionController(UIController* uc);
+	SessionController(UIController* uc, ATM* atm);
 	~SessionController();
 
 	void setupForAction(Action* a);
@@ -27,13 +28,15 @@ public:
 	int getBalance();
 	const QString changePIN();
 
+	const QString createCard(const QString& card);
 	void blockCard(const QString& card);
+	void unblockCard(const QString& card);
 	void addBanknotes(const QMap<int,int>& banknotes);
 	void addBalance(int sum);
 	void giveCash(int sum);
 	void transferMoney(int sum, const QString& card);
 
-	void reset();
+	void reset(bool toMode);
 	void placeToMemory(const QString& data);
 	const QString takeFromMemory();
 
@@ -48,11 +51,16 @@ public slots:
 private:
 	UIController* _uc;
 	Action* _currAction;
+	ATM* _atm;
+	QString _toPin;
 
 	enum States : int {
 		IDLE,
 		PIN_CHECKING,
 		PIN_WRONG,
+		TO_PIN_CHECKING,
+		TO_PIN_WRONG,
+		TO_IDLE
 	};
 
 	States _state;
