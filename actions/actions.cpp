@@ -2,11 +2,6 @@
 #include "controllers/sessioncontroller.h"
 #include "controllers/uicontroller.h"
 
-Actions::Actions()
-{
-
-}
-
 TestAction::TestAction() :
 	Action(ActionType::CASH_ADD_ADDED) {
 	_isPinRestricted = true;

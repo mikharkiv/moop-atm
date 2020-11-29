@@ -3,13 +3,6 @@
 
 #include "action.h"
 
-
-class Actions
-{
-public:
-	Actions();
-};
-
 class TestAction : public Action {
 	// Action interface
 public:
