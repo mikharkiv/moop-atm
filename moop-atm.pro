@@ -1,4 +1,5 @@
 QT       += core gui
+QT 		 += sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -9,6 +10,10 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    account.cpp \
+    bank.cpp \
+    dbcontroller.cpp \
+    localmediator.cpp \
     actions/action.cpp \
     actions/actions.cpp \
     atm.cpp \
@@ -21,6 +26,13 @@ SOURCES += \
     atmmainwindow.cpp
 
 HEADERS += \
+    account.h \
+    atmmainwindow.h \
+    bank.h \
+    bankresponse.h \
+    dbcontroller.h \
+    imediator.h \
+    localmediator.h
     actions/ActionsType.h \
     actions/action.h \
     actions/actions.h \
