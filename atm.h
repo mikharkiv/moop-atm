@@ -4,49 +4,45 @@
 #include <QObject>
 #include <QMap>
 #include "controllers/uicontroller.h"
-#include "controllers/sessioncontroller.h"
+#include "bank.h"
+#include "localmediator.h"
 
-class ATM
+class SessionController;
+class ATM : public QObject
 {
 	Q_OBJECT
 public:
-	ATM(int id, const QString& location, QMap<int, int> money, QList<QString> knownCards);
+	ATM(ATMMainWindow* ui, int id, const QString& location, QMap<int, int> money, QList<QString> knownCards);
 
 	bool cardExists(const QString& card);
 	bool isCardBlocked(const QString& card);
 	bool isCardExpired(const QString& card);
 	int getBalance(const QString& card);
 	bool checkPIN(const QString& card, const QString& pin);
+	QString changePIN(const QString& card);
 
 	bool canWithdrawSum(size_t sum);
 	void withdrawBanknotes(size_t sum);
 	void addBanknotes(QMap<int,int> banknotes);
 
-	void addBalance(size_t sum, QString& card);
-	void subtractBalance(size_t sum, QString& card);
+	void addBalance(size_t sum, const QString& card);
+	void subtractBalance(size_t sum, const QString& card);
 
 
-	void blockCard(QString& card);
-	void unblockCard(QString& card);
-
-public slots:
-	void doModeSwitching(bool toTOMode);
+	const QString createCard(const QString& card);
+	void blockCard(const QString& card);
+	void unblockCard(const QString& card);
 
 private:
+	Bank* _bank;
+	LocalMediator* _mediator;
 	UIController* _uc;
 	int _id;
 	QString _location;
-	bool _isTOMode;
 	QMap<int, int> _money;
 	QList<QString> _knownCards;
 
 	SessionController* _sc;
-//	TOSessionController* _tsc;
-
-	void start();
-	void reset();
-	void switchMode(bool toTO);
-
 };
 
 #endif // ATM_H

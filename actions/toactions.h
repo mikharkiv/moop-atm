@@ -1,13 +1,14 @@
-#ifndef ACTIONS_H
-#define ACTIONS_H
+#ifndef TOACTIONS_H
+#define TOACTIONS_H
 
 #include "action.h"
 
-class MainMenuAction : public Action {
+
+class TOMainMenuAction : public Action {
 	// Action interface
 public:
-	MainMenuAction();
-	~MainMenuAction();
+	TOMainMenuAction();
+	~TOMainMenuAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -19,11 +20,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class CardInsertAction : public Action {
+class TONewCardMenuAction : public Action {
 	// Action interface
 public:
-	CardInsertAction();
-	~CardInsertAction();
+	TONewCardMenuAction();
+	~TONewCardMenuAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -35,11 +36,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class CardBlockedAction : public Action {
+class TONewCardExistsAction : public Action {
 	// Action interface
 public:
-	CardBlockedAction();
-	~CardBlockedAction();
+	TONewCardExistsAction();
+	~TONewCardExistsAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -51,11 +52,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class CardExpiredAction : public Action {
+class TONewCardCreatedAction : public Action {
 	// Action interface
 public:
-	CardExpiredAction();
-	~CardExpiredAction();
+	TONewCardCreatedAction();
+	~TONewCardCreatedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -67,11 +68,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class UserMenuAction : public Action {
+class TOCardBlockMenuAction : public Action {
 	// Action interface
 public:
-	UserMenuAction();
-	~UserMenuAction();
+	TOCardBlockMenuAction();
+	~TOCardBlockMenuAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -83,11 +84,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class GetCashAction : public Action {
+class TOCardBlockNotExistsAction : public Action {
 	// Action interface
 public:
-	GetCashAction();
-	~GetCashAction();
+	TOCardBlockNotExistsAction();
+	~TOCardBlockNotExistsAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -99,11 +100,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class NoBanknotesAction : public Action {
+class TOCardBlockAlreadyBlockedAction : public Action {
 	// Action interface
 public:
-	NoBanknotesAction();
-	~NoBanknotesAction();
+	TOCardBlockAlreadyBlockedAction();
+	~TOCardBlockAlreadyBlockedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -115,11 +116,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class NoBalanceAction : public Action {
+class TOCardBlockBlockedAction : public Action {
 	// Action interface
 public:
-	NoBalanceAction();
-	~NoBalanceAction();
+	TOCardBlockBlockedAction();
+	~TOCardBlockBlockedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -131,11 +132,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class CashGivenAction : public Action {
+class TOCardBlockExpiredAction : public Action {
 	// Action interface
 public:
-	CashGivenAction();
-	~CashGivenAction();
+	TOCardBlockExpiredAction();
+	~TOCardBlockExpiredAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -147,11 +148,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class TopUpBalanceAction : public Action {
+class TOCardUnblockMenuAction : public Action {
 	// Action interface
 public:
-	TopUpBalanceAction();
-	~TopUpBalanceAction();
+	TOCardUnblockMenuAction();
+	~TOCardUnblockMenuAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -163,11 +164,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class BalanceToppedUpAction : public Action {
+class TOCardUnblockNotBlockedAction : public Action {
 	// Action interface
 public:
-	BalanceToppedUpAction();
-	~BalanceToppedUpAction();
+	TOCardUnblockNotBlockedAction();
+	~TOCardUnblockNotBlockedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -179,11 +180,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class MoneyTransferFirstAction : public Action {
+class TOCardUnblockUnblockedAction : public Action {
 	// Action interface
 public:
-	MoneyTransferFirstAction();
-	~MoneyTransferFirstAction();
+	TOCardUnblockUnblockedAction();
+	~TOCardUnblockUnblockedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -195,11 +196,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class MoneyTransferSecondAction : public Action {
+class TOMoneyInsertMenuAction : public Action {
 	// Action interface
 public:
-	MoneyTransferSecondAction();
-	~MoneyTransferSecondAction();
+	TOMoneyInsertMenuAction();
+	~TOMoneyInsertMenuAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -211,11 +212,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class WrongCardAction : public Action {
+class TOMoneyInsertInsertedAction : public Action {
 	// Action interface
 public:
-	WrongCardAction();
-	~WrongCardAction();
+	TOMoneyInsertInsertedAction();
+	~TOMoneyInsertInsertedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -227,11 +228,11 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class MoneyTransferedAction : public Action {
+class TOWorkFinishedAction : public Action {
 	// Action interface
 public:
-	MoneyTransferedAction();
-	~MoneyTransferedAction();
+	TOWorkFinishedAction();
+	~TOWorkFinishedAction();
 
 	void beforeAction();
 	void actionPerformed(int type, QString &input);
@@ -243,68 +244,4 @@ public:
 	void actionPerformed(UIActionType actionType, const QString &param);
 };
 
-class BalancePrintedAction : public Action {
-	// Action interface
-public:
-	BalancePrintedAction();
-	~BalancePrintedAction();
-
-	void beforeAction();
-	void actionPerformed(int type, QString &input);
-	void afterAction();
-
-	// Action interface
-public:
-	void setupForUI(UIController *uc, SessionController *sc);
-	void actionPerformed(UIActionType actionType, const QString &param);
-};
-
-class PinChangedAction : public Action {
-	// Action interface
-public:
-	PinChangedAction();
-	~PinChangedAction();
-
-	void beforeAction();
-	void actionPerformed(int type, QString &input);
-	void afterAction();
-
-	// Action interface
-public:
-	void setupForUI(UIController *uc, SessionController *sc);
-	void actionPerformed(UIActionType actionType, const QString &param);
-};
-
-class WorkFinishedAction : public Action {
-	// Action interface
-public:
-	WorkFinishedAction();
-	~WorkFinishedAction();
-
-	void beforeAction();
-	void actionPerformed(int type, QString &input);
-	void afterAction();
-
-	// Action interface
-public:
-	void setupForUI(UIController *uc, SessionController *sc);
-	void actionPerformed(UIActionType actionType, const QString &param);
-};
-
-//class TestAction : public Action {
-//	// Action interface
-//public:
-//	TestAction();
-//	~TestAction();
-//
-//	void beforeAction();
-//	void actionPerformed(int type, QString &input);
-//	void afterAction();
-//
-//	// Action interface
-//public:
-//	void setupForUI(UIController *uc, SessionController *sc);
-//	void actionPerformed(UIActionType actionType, const QString &param);
-//};
-
-#endif // ACTIONS_H
+#endif // TOACTIONS_H

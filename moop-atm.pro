@@ -11,6 +11,7 @@ CONFIG += c++11
 
 SOURCES += \
     account.cpp \
+    actions/toactions.cpp \
     bank.cpp \
     dbcontroller.cpp \
     localmediator.cpp \
@@ -27,12 +28,13 @@ SOURCES += \
 
 HEADERS += \
     account.h \
+	actions/toactions.h \
     atmmainwindow.h \
     bank.h \
     bankresponse.h \
     dbcontroller.h \
     imediator.h \
-    localmediator.h
+	localmediator.h \
     actions/ActionsType.h \
     actions/action.h \
     actions/actions.h \
