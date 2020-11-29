@@ -14,6 +14,14 @@ SOURCES += \
     bank.cpp \
     dbcontroller.cpp \
     localmediator.cpp \
+    actions/action.cpp \
+    actions/actions.cpp \
+    atm.cpp \
+    controllers/sessioncontroller.cpp \
+    controllers/uicontroller.cpp \
+    forms/cardwindow.cpp \
+    forms/moneywindow.cpp \
+    forms/receiptwindow.cpp \
     main.cpp \
     atmmainwindow.cpp
 
@@ -25,9 +33,22 @@ HEADERS += \
     dbcontroller.h \
     imediator.h \
     localmediator.h
+    actions/ActionsType.h \
+    actions/action.h \
+    actions/actions.h \
+    atm.h \
+    atmmainwindow.h \
+    controllers/sessioncontroller.h \
+    controllers/uicontroller.h \
+    forms/cardwindow.h \
+    forms/moneywindow.h \
+    forms/receiptwindow.h
 
 FORMS += \
-    atmmainwindow.ui
+    atmmainwindow.ui \
+    forms/cardwindow.ui \
+    forms/moneywindow.ui \
+    forms/receiptwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

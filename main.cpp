@@ -1,5 +1,7 @@
 #include "atmmainwindow.h"
 #include "bank.h"
+#include "controllers/uicontroller.h"
+#include "controllers/sessioncontroller.h"
 
 #include <QApplication>
 #include <QDebug>
@@ -14,6 +16,9 @@ int main(int argc, char *argv[])
     }
     QApplication a(argc, argv);
     ATMMainWindow w;
+    w.show();
+    UIController c(&w);
+    SessionController s(&c);
     w.show();
     return a.exec();
 }
