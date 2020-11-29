@@ -10,7 +10,7 @@ class Bank
 {
     DBController _db;
 public:
-    Bank();
+    Bank(QString dbPath);
 
     BankResponse<Account> getAccount(QString id);
     BankResponse<ResponseStatus> createAccount(const Account& acc);

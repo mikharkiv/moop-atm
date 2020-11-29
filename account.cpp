@@ -40,7 +40,7 @@ void Account::setBalance(const double val)
     _balance = val;
 }
 
-Account::Account(QString card, QDateTime date, QString pin) : _cardNumber(card), _expirationDate(date), _pin(pin)
+Account::Account(QString card, QDateTime date, QString pin) : _cardNumber(card), _expirationDate(date), _pin(pin), _blocked(false), _balance(0)
 {
 
 }

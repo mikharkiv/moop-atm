@@ -9,7 +9,7 @@ class DBController
     QSqlDatabase _db;
     void initDb();
 public:
-    DBController();
+    DBController(QString);
     ~DBController();
     bool addAccount(const Account& acc);
     bool updateAccount(const Account& acc);

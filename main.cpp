@@ -8,12 +8,12 @@
 
 int main(int argc, char *argv[])
 {
-    Bank bank;
+    Bank bank("bank_db.sqlite");
     bank.top_up("111111", 56);
     auto acc = bank.getAccount("111111");
-    if (acc.status == OK){
-        qDebug() << acc.value.cardNumber() << ' ' << acc.value.balance();
-    }
+//    if (acc.status == OK){
+//        qDebug() << acc.value.cardNumber() << ' ' << acc.value.balance();
+//    }
     QApplication a(argc, argv);
     ATMMainWindow w;
     w.show();
