@@ -30,6 +30,7 @@ enum ActionType : int {
 	PIN_CHANGE_PRINTED,
 
 	// TO
+	TO_MENU,
 	TO_MAIN_MENU,
 	TO_NEW_CARD_MENU,
 	TO_NEW_CARD_EXISTS,

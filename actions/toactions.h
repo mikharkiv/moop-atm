@@ -4,6 +4,22 @@
 #include "action.h"
 
 
+class TOMenuAction : public Action {
+	// Action interface
+public:
+	TOMenuAction();
+	~TOMenuAction();
+
+	void beforeAction();
+	void actionPerformed(int type, QString &input);
+	void afterAction();
+
+	// Action interface
+public:
+	void setupForUI(UIController *uc, SessionController *sc);
+	void actionPerformed(UIActionType actionType, const QString &param);
+};
+
 class TOMainMenuAction : public Action {
 	// Action interface
 public:

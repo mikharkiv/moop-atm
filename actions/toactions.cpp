@@ -3,10 +3,21 @@
 #include "controllers/uicontroller.h"
 
 
+TOMenuAction::TOMenuAction(): Action(ActionType::TO_MENU) {_isPinRestricted = true;}
+TOMenuAction::~TOMenuAction() {}
+void TOMenuAction::beforeAction() {
+	_sc->setupForAction(new TOMainMenuAction());
+}
+void TOMenuAction::afterAction() {}
+void TOMenuAction::setupForUI(UIController *uc, SessionController *sc) {
+	Action::setupUI(uc, sc);
+	beforeAction();
+}
+void TOMenuAction::actionPerformed(UIActionType actionType, const QString &param) {}
+
 TOMainMenuAction::TOMainMenuAction(): Action(ActionType::TO_MAIN_MENU) {
     _message = "Меню технічого спеціаліста.\nВиберіть операцію:";
-    _actionsLabels = QList<QString>() << "Створити нову картку" << "Заблокувати картку" << "Розблокувати картку" << "Вийти з режиму ТО";
-	_isPinRestricted = true;
+	_actionsLabels = QList<QString>() << "Створити нову картку" << "Заблокувати картку" << "Розблокувати картку" << "Вийти з режиму ТО";
 }
 TOMainMenuAction::~TOMainMenuAction() {}
 void TOMainMenuAction::beforeAction() {

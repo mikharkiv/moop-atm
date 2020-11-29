@@ -35,6 +35,7 @@ private:
 	QMap<int, int> banknotes;
 	QButtonGroup insertButtons;
 	QList<QLabel*> insertedLabels;
+	int* _butvals;
 
 	void checkBanknotesInserted();
 };

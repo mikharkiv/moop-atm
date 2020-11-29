@@ -1,6 +1,7 @@
 #include "atm.h"
 #include "controllers/sessioncontroller.h"
 #include <QRandomGenerator>
+#include <math.h>
 
 ATM::ATM(ATMMainWindow* ui, int id, const QString &location, QMap<int, int> money, QList<QString> knownCards):
 	QObject(),
@@ -34,7 +35,7 @@ bool ATM::isCardExpired(const QString &card)
 {
 	BankResponse<Account> br = _mediator->getAccount(card);
 	if (br.status() == OK) {
-		return (br.value().expirationDate() > QDateTime::currentDateTime());
+		return (br.value().expirationDate() < QDateTime::currentDateTime());
 	} else return false;
 }
 
@@ -65,13 +66,33 @@ QString ATM::changePIN(const QString &card)
 
 bool ATM::canWithdrawSum(size_t sum)
 {
+	return !sumToBanknotes(sum).empty();
+}
 
-	return true;
+QMap<int,int> ATM::sumToBanknotes(size_t sum)
+{
+	size_t rest = sum;
+	QMap<int,int> res;
+	QList<int> keys(_money.keys());
+	std::sort(keys.begin(), keys.end(), std::greater<int>());
+	for (int i = 0; i < keys.length(); ++i) {
+		if (rest == 0) return res;
+		int curkey = keys.at(i);
+		double divres = floor(rest / curkey);
+		if (divres >= 1 && _money[curkey] >= divres) {
+			rest -= divres * curkey;
+			res[curkey] = divres;
+		}
+	}
+	if (rest == 0) return res;
+	else return QMap<int,int>();
 }
 
 void ATM::withdrawBanknotes(size_t sum)
 {
-
+	QMap<int,int> res = sumToBanknotes(sum);
+	for (int i = 0; i < res.keys().length(); ++i)
+		_money[res.keys().at(i)] = _money[res.keys().at(i)] - res[res.keys().at(i)];
 }
 
 void ATM::addBanknotes(QMap<int, int> banknotes)

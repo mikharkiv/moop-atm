@@ -28,17 +28,24 @@ void SessionController::onInput(QString &input)
 {
 	if (_state == States::PIN_CHECKING) {
 		if (checkPin(input)) {
-			_state = States::IDLE;
-			_currPinAttempts = 0;
-			_currAction->setupForUI(_uc, this);
+			if (checkCardBlocked(_currCard)) {
+				_state = States::PIN_WRONG;
+				_uc->printMessage("Картку заблоковано", QList<QString>() << "Ок");
+			} else if (checkCardExpired(_currCard)) {
+				_state = States::PIN_WRONG;
+				_uc->printMessage("Сплив термін дії картки", QList<QString>() << "Ок");
+			} else {
+				_state = States::IDLE;
+				_currPinAttempts = 0;
+				_currAction->setupForUI(_uc, this);
+			}
 		} else {
 			_currPinAttempts += 1;
 			if (_currPinAttempts >= _maxPinAttempts) {
-				// TODO get card blocked action
+				blockCard(_currCard);
 				_uc->printMessage("Через перевищення спроб введення ПІН вашу картку заблоковано. Зверніться до співробітника банку", QList<QString>() << "Ок");
 				_uc->setTypingEnabled(false);
 				_state = States::PIN_WRONG;
-				// TODO card blocking
 			} else {
 				_uc->printMessage(QString("Введено неправильний ПІН. Залишилось %1 спроб").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
 			}
@@ -51,10 +58,8 @@ void SessionController::onInput(QString &input)
 		} else {
 			_currPinAttempts += 1;
 			if (_currPinAttempts >= _maxPinAttempts) {
-				// TODO get card blocked action
 				_uc->printMessage("Через перевищення спроб введення ПІН технічного спеціаліста режим заблоковано");
 				_uc->setTypingEnabled(false);
-				// TODO card blocking
 			} else {
 				_uc->printMessage(QString("Введено неправильний ПІН. Залишилось %1 спроб").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код технічного спеціаліста:");
 			}
@@ -67,7 +72,10 @@ void SessionController::onInput(QString &input)
 void SessionController::onMoneyInsert(QMap<int, int> &money)
 {
 	addBanknotes(money);
-	_currAction->actionPerformed(UIActionType::MONEY_INSERTED, "100");
+	int res = 0;
+	for (int i = 0; i < money.keys().length(); ++i)
+		res += money.keys().at(i) * money[money.keys().at(i)];
+	_currAction->actionPerformed(UIActionType::MONEY_INSERTED, QString::number(res));
 }
 
 void SessionController::onCardChosen(QString &cardNumber)
@@ -109,7 +117,12 @@ void SessionController::providePinChecking()
 	_uc->printMessage(QString("Необхідна перевірка ПІН технічного спеціаліста. Залишилось %1 спроби ").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код технічного спеціаліста:");
 	} else {
 		_state = States::PIN_CHECKING;
-		_uc->printMessage(QString("Необхідна перевірка ПІН. Залишилось %1 спроби ").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
+		if (!checkCardExists(_currCard)) {
+			_state = States::PIN_WRONG;
+			_uc->printMessage("Картки не існує", QList<QString>() << "Ок");
+		} else {
+			_uc->printMessage(QString("Необхідна перевірка ПІН. Залишилось %1 спроби ").arg(QString::number(_maxPinAttempts - _currPinAttempts)), QList<QString>(), "Введіть ПІН-код:");
+		}
 	}
 	_currPinAttempts = 0;
 }
@@ -200,7 +213,7 @@ void SessionController::reset(bool toMode)
 	_currPinAttempts = 0;
 	if (toMode) {
 		_state = States::TO_IDLE;
-		setupForAction(new TOMainMenuAction());
+		setupForAction(new TOMenuAction());
 	} else {
 		_state = States::IDLE;
 		setupForAction(new MainMenuAction());

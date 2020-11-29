@@ -262,6 +262,7 @@ void MoneyTransferFirstAction::actionPerformed(UIActionType actionType, const QS
 
 MoneyTransferSecondAction::MoneyTransferSecondAction(): Action(ActionType::MONEY_TRANSFER_MENU2) {
 	_message = "Введіть номер картки";
+	_canType = true;
 }
 MoneyTransferSecondAction::~MoneyTransferSecondAction() {}
 void MoneyTransferSecondAction::beforeAction() {

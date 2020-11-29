@@ -43,6 +43,8 @@ private:
 	QList<QString> _knownCards;
 
 	SessionController* _sc;
+
+	QMap<int,int> sumToBanknotes(size_t sum);
 };
 
 #endif // ATM_H
