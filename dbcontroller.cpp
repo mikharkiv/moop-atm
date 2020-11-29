@@ -2,12 +2,9 @@
 
 #include <QDateTime>
 
-
 void DBController::initDb()
 {
-    _db = QSqlDatabase::addDatabase("QSQLITE");
-    _db.setDatabaseName("C:\\Development\\MOOP\\build-moop-atm-Desktop_Qt_5_14_2_MSVC2017_64bit-Debug\\debug\\bank_db.sqlite");
-    _db.open();
+
     QSqlQuery create_query;
     QString str = "CREATE TABLE IF NOT EXISTS Account ("
                 "card_number text PRIMARY KEY NOT NULL, "
@@ -22,8 +19,11 @@ void DBController::initDb()
     }
 }
 
-DBController::DBController()
+DBController::DBController(QString dbPath)
 {
+    _db = QSqlDatabase::addDatabase("QSQLITE");
+    _db.setDatabaseName(dbPath);
+    _db.open();
     initDb();
 }
 
@@ -72,8 +72,8 @@ Account DBController::getAccount(const QString& num)
         throw NotFoundException();
     QString card_num = getQuery.value(0).toString();
     QDateTime exp = QDateTime::fromSecsSinceEpoch(getQuery.value(1).toUInt());
-    bool blocked = getQuery.value(2) == "1";
-    QString pin = getQuery.value(3).toString();
+    QString pin = getQuery.value(2).toString();
+    bool blocked = getQuery.value(3).toBool();
     double balance = getQuery.value(4).toDouble();
     return Account(card_num, exp, pin, blocked, balance);
 }

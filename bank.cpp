@@ -1,6 +1,6 @@
 #include "bank.h"
 
-Bank::Bank() : _db(DBController())
+Bank::Bank(QString dbPath) : _db(DBController(dbPath))
 {
 
 }
@@ -25,6 +25,8 @@ BankResponse<double> Bank::withdraw(QString id, const double amount)
     try {
         Account acc = _db.getAccount(id);
         double bal = acc.balance();
+        if (acc.blocked())
+            return BankResponse<double>(BLOCKED);
         if (bal < amount)
             return BankResponse<double>(NOT_ENOUGH);
         acc.setBalance(bal - amount);
@@ -40,6 +42,8 @@ BankResponse<double> Bank::top_up(QString id, const double amount)
 {
     try {
         Account acc = _db.getAccount(id);
+        if (acc.blocked())
+            return BankResponse<double>(BLOCKED);
         double bal = acc.balance();
         acc.setBalance(bal + amount);
         _db.updateAccount(acc);
@@ -87,6 +91,8 @@ BankResponse<ResponseStatus> Bank::setPin(QString id, QString newPin)
 {
     try {
         Account acc = _db.getAccount(id);
+        if (acc.blocked())
+            return BankResponse<ResponseStatus>(BLOCKED);
         acc.setPin(newPin);
         _db.updateAccount(acc);
         return BankResponse<ResponseStatus>(OK);
