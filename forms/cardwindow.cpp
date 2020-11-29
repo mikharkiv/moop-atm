@@ -16,6 +16,12 @@ CardWindow::CardWindow(QWidget *parent) :
 	cardsButtons.addButton(ui->exCardThreeButton, 2);
 	cardsButtons.addButton(ui->exCardFourButton, 3);
 
+	ui->exCardOneButton->hide();
+	ui->exCardTwoButton->hide();
+	ui->exCardThreeButton->hide();
+	ui->exCardFourButton->hide();
+	ui->chooseExistingLabel->hide();
+
 	setKnownCards(*(new QList<QString>()));
 
 	checkCardNumber();

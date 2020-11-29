@@ -281,7 +281,7 @@ void MoneyTransferSecondAction::actionPerformed(UIActionType actionType, const Q
 		} else {
 			QString money = _sc->takeFromMemory();
 			_sc->transferMoney(money.toInt(), param);
-			_sc->setupForAction(new MoneyTransferSecondAction());
+			_sc->setupForAction(new MoneyTransferedAction());
 		}
 	}  else if (actionType == UIActionType::CANCELED) {
 		_sc->setupForAction(new UserMenuAction());

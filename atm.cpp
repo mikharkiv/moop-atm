@@ -9,8 +9,8 @@ ATM::ATM(ATMMainWindow* ui, int id, const QString &location, QMap<int, int> mone
 	_location(location),
 	_money(money),
 	_knownCards(knownCards),
-	_bank(new Bank()),
-	_mediator(new LocalMediator(_bank)),
+	_bank(new Bank("bank_db.sqlite")),
+	_mediator(new LocalMediator(QSharedPointer<Bank>(_bank))),
 	_uc(new UIController(ui)),
 	_sc(new SessionController(_uc, this))
 {
