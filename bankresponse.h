@@ -14,6 +14,7 @@ public:
     BankResponse(const ResponseStatus resp) : _status(resp), _value(nullptr) {}
     BankResponse(Value&& val) : _status(ResponseStatus::OK), _value(new Value(val)) {}
     BankResponse(BankResponse&& b) : _status(b._status), _value(b._value) {b._value = nullptr;}
+    BankResponse(const BankResponse& b) : _status(b._status), _value(new Value(b._value)) {}
     ~BankResponse(){ delete _value; }
 
     const Value& value() const {
