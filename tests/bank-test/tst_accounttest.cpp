@@ -16,12 +16,12 @@ public:
     ~AccountTest();
 
 private slots:
-    void cleanupTestCase();
     void create_account();
     void get_account();
     void balance();
     void pin();
     void block();
+    void expired();
 };
 
 AccountTest::AccountTest()
@@ -30,10 +30,6 @@ AccountTest::AccountTest()
 }
 
 AccountTest::~AccountTest()
-{
-}
-
-void AccountTest::cleanupTestCase()
 {
     delete _bank;
     QSqlDatabase db;
@@ -47,15 +43,15 @@ void AccountTest::cleanupTestCase()
 
 void AccountTest::create_account()
 {
-    auto create = _bank->createAccount(Account("1111", QDateTime::currentDateTime(), "1234"));
+    auto create = _bank->createAccount(Account("1111", QDateTime::currentDateTime().addMonths(5), "1234"));
     QCOMPARE(create._status, OK);
-    auto create2 = _bank->createAccount(Account("1111", QDateTime::currentDateTime(), "1234"));
+    auto create2 = _bank->createAccount(Account("1111", QDateTime::currentDateTime().addMonths(5), "1234"));
     QCOMPARE(create2._status, ERROR);
 }
 
 void AccountTest::get_account()
 {
-    Account acc("1112", QDateTime::currentDateTime(), "4321");
+    Account acc("1112", QDateTime::currentDateTime().addMonths(5), "4321");
     _bank->createAccount(acc);
     auto get1 = _bank->getAccount("1112");
     QCOMPARE(get1.status(), OK);
@@ -73,7 +69,7 @@ void AccountTest::get_account()
 
 void AccountTest::balance()
 {
-    Account acc("1113", QDateTime::currentDateTime(), "2345");
+    Account acc("1113", QDateTime::currentDateTime().addMonths(5), "2345");
      _bank->createAccount(acc);
 
     auto balance1 = _bank->getAccount("1113");
@@ -94,7 +90,7 @@ void AccountTest::balance()
 
 void AccountTest::pin()
 {
-    Account acc("1114", QDateTime::currentDateTime(), "2345");
+    Account acc("1114", QDateTime::currentDateTime().addMonths(5), "2345");
     _bank->createAccount(acc);
 
     auto pin = _bank->checkPin("1114", "2345");
@@ -115,7 +111,7 @@ void AccountTest::pin()
 
 void AccountTest::block()
 {
-    Account acc("1115", QDateTime::currentDateTime(), "1256");
+    Account acc("1115", QDateTime::currentDateTime().addMonths(5), "1256");
     _bank->createAccount(acc);
 
     auto acc1 = _bank->getAccount("1115");
@@ -141,6 +137,21 @@ void AccountTest::block()
 
     auto acc5 = _bank->getAccount("1115");
     QCOMPARE(acc5.value().blocked(), false);
+}
+
+void AccountTest::expired()
+{
+    Account acc("1116", QDateTime::currentDateTime().addDays(-5), "2345");
+     _bank->createAccount(acc);
+
+    auto top_up = _bank->top_up("1116", 67.35);
+    QCOMPARE(top_up.status(), EXPIRED);
+
+    auto withdraw = _bank->withdraw("1116", 50);
+    QCOMPARE(withdraw.status(), EXPIRED);
+
+    auto balance = _bank->getAccount("1116");
+    QCOMPARE(balance.value().balance(), 0);
 }
 
 QTEST_APPLESS_MAIN(AccountTest)
