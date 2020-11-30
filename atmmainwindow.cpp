@@ -16,6 +16,9 @@ ATMMainWindow::ATMMainWindow(QWidget *parent)
 {
 	ui->setupUi(this);
 
+	// prevent window resizing
+	setWindowFlags(Qt::Dialog | Qt::MSWindowsFixedSizeDialogHint);
+
 	actionsButtons.addButton(ui->actionOneButton, 0);
 	actionsButtons.addButton(ui->actionTwoButton, 1);
 	actionsButtons.addButton(ui->actionThreeButton, 2);
