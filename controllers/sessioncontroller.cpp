@@ -28,17 +28,9 @@ void SessionController::onInput(QString &input)
 {
 	if (_state == States::PIN_CHECKING) {
 		if (checkPin(input)) {
-			if (checkCardBlocked(_currCard)) {
-				_state = States::PIN_WRONG;
-				_uc->printMessage("Картку заблоковано", QList<QString>() << "Ок");
-			} else if (checkCardExpired(_currCard)) {
-				_state = States::PIN_WRONG;
-				_uc->printMessage("Сплив термін дії картки", QList<QString>() << "Ок");
-			} else {
-				_state = States::IDLE;
-				_currPinAttempts = 0;
-				_currAction->setupForUI(_uc, this);
-			}
+			_state = States::IDLE;
+			_currPinAttempts = 0;
+			_currAction->setupForUI(_uc, this);
 		} else {
 			_currPinAttempts += 1;
 			if (_currPinAttempts >= _maxPinAttempts) {
@@ -95,6 +87,17 @@ void SessionController::onActionClicked(int id)
 		reset(false);
 	else
 		_currAction->actionPerformed(UIActionType::ACTION_CLICKED, QString::number(id));
+}
+
+void SessionController::showReceipt(const QString &message)
+{
+	QString receiptText ("");
+	receiptText = QDateTime::currentDateTime().toString("Дата: dd.MM.yyyy\nЧас: hh:mm:ss\n\n\n");
+	receiptText += QString("Банкомат\nНомер: %1\nАдреса: %2\n\n\n").arg(_atm->getId()).arg(_atm->getLocation());
+	receiptText += (_state == States::TO_IDLE ? "Режим технічного спеціаліста\n\n\n" : QString("Режим користувача\nНомер картки: %1\n\n\n").arg(_currCard));
+	receiptText += message;
+	receiptText += "\n\n\nЦЕЙ ЧЕК Є ЮРИДИЧНИМ ДОКУМЕНТОМ";
+	_uc->showReceipt(receiptText);
 }
 
 void SessionController::connectUI()

@@ -11,7 +11,8 @@ void TOMenuAction::actionPerformed(UIActionType actionType, const QString &param
 
 TOMainMenuAction::TOMainMenuAction(): Action(ActionType::TO_MAIN_MENU) {
     _message = "Меню технічого спеціаліста.\nВиберіть операцію:";
-	_actionsLabels = QList<QString>() << "Створити нову картку" << "Заблокувати картку" << "Розблокувати картку" << "Вийти з режиму ТО";
+	_actionsLabels = QList<QString>() << "Створити нову картку" << "Заблокувати картку" << "Розблокувати картку" << "Поповнити сховище купюр" << "Вийти з режиму ТО";
+	_canCancel = true;
 }
 void TOMainMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED) {
@@ -20,14 +21,17 @@ void TOMainMenuAction::actionPerformed(UIActionType actionType, const QString &p
 			case 0: _sc->setupForAction(new TONewCardMenuAction()); break;
 			case 1: _sc->setupForAction(new TOCardBlockMenuAction()); break;
 			case 2: _sc->setupForAction(new TOCardUnblockMenuAction()); break;
-			case 3: _sc->setupForAction(new TOWorkFinishedAction()); break;
+			case 3: _sc->setupForAction(new TOMoneyInsertMenuAction()); break;
+			case 4: _sc->setupForAction(new TOWorkFinishedAction()); break;
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOWorkFinishedAction());
 }
 
 TONewCardMenuAction::TONewCardMenuAction(): Action(ActionType::TO_NEW_CARD_MENU) {
     _message = "Введіть номер картки:";
-    _canType = true;
+	_canType = true;
+	_canCancel = true;
 }
 
 void TONewCardMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
@@ -38,8 +42,8 @@ void TONewCardMenuAction::actionPerformed(UIActionType actionType, const QString
 			_sc->placeToMemory(param);
 			_sc->setupForAction(new TONewCardCreatedAction());
 		}
-	}
-
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOMainMenuAction());
 }
 
 TONewCardExistsAction::TONewCardExistsAction(): Action(ActionType::TO_NEW_CARD_EXISTS) {
@@ -56,7 +60,7 @@ TONewCardCreatedAction::TONewCardCreatedAction(): Action(ActionType::TO_NEW_CARD
     _actionsLabels = QList<QString>() << "Ок";
 }
 void TONewCardCreatedAction::beforeAction() {
-	_uc->showReceipt(QString("ПІН: %1").arg(_sc->createCard(_sc->takeFromMemory())));
+	_sc->showReceipt(QString("Створено нову картку\nПІН: %1").arg(_sc->createCard(_sc->takeFromMemory())));
     _uc->printMessage(_message, _actionsLabels);
 }
 void TONewCardCreatedAction::actionPerformed(UIActionType actionType, const QString &param) {
@@ -67,6 +71,7 @@ void TONewCardCreatedAction::actionPerformed(UIActionType actionType, const QStr
 TOCardBlockMenuAction::TOCardBlockMenuAction(): Action(ActionType::TO_CARD_BLOCK_MENU) {
 	_message = "Введіть номер картки для блокування";
 	_canType = true;
+	_canCancel = true;
 }
 void TOCardBlockMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
@@ -80,7 +85,8 @@ void TOCardBlockMenuAction::actionPerformed(UIActionType actionType, const QStri
 			_sc->placeToMemory(param);
 			_sc->setupForAction(new TOCardBlockBlockedAction());
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOMainMenuAction());
 }
 
 TOCardBlockNotExistsAction::TOCardBlockNotExistsAction(): Action(ActionType::TO_CARD_BLOCK_NOT_EXISTS) {
@@ -109,7 +115,7 @@ void TOCardBlockBlockedAction::beforeAction() {
     _uc->printMessage(_message, _actionsLabels);
 	QString c = _sc->takeFromMemory();
 	_sc->blockCard(c);
-	_uc->showReceipt(QString("Заблоковано картку: %1").arg(c));
+	_sc->showReceipt(QString("Заблоковано картку: %1").arg(c));
 }
 void TOCardBlockBlockedAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
@@ -128,6 +134,7 @@ void TOCardBlockExpiredAction::actionPerformed(UIActionType actionType, const QS
 TOCardUnblockMenuAction::TOCardUnblockMenuAction(): Action(ActionType::TO_CARD_UNBLOCK_MENU) {
 	_message = "Введіть номер картки для розблокування";
 	_canType = true;
+	_canCancel = true;
 }
 void TOCardUnblockMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
@@ -141,7 +148,8 @@ void TOCardUnblockMenuAction::actionPerformed(UIActionType actionType, const QSt
 			_sc->placeToMemory(param);
 			_sc->setupForAction(new TOCardUnblockUnblockedAction());
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOMainMenuAction());
 }
 
 TOCardUnblockNotBlockedAction::TOCardUnblockNotBlockedAction(): Action(ActionType::TO_CARD_UNBLOCK_NOT_BLOCKED) {
@@ -160,7 +168,7 @@ void TOCardUnblockUnblockedAction::beforeAction() {
     _uc->printMessage(_message, _actionsLabels);
 	QString c = _sc->takeFromMemory();
 	_sc->unblockCard(c);
-	_uc->showReceipt(QString("Картку розблоковано: %1").arg(c));
+	_sc->showReceipt(QString("Картку розблоковано: %1").arg(c));
 }
 void TOCardUnblockUnblockedAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED) _sc->setupForAction(new TOMainMenuAction());
@@ -169,19 +177,24 @@ void TOCardUnblockUnblockedAction::actionPerformed(UIActionType actionType, cons
 TOMoneyInsertMenuAction::TOMoneyInsertMenuAction(): Action(ActionType::TO_MONEY_INSERT_MENU) {
 	_message = "Вставте купюри в купюроприймач";
 	_canInsertMoney = true;
+	_canCancel = true;
 }
 void TOMoneyInsertMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::MONEY_INSERTED) _sc->setupForAction(new TOMoneyInsertInsertedAction());
+	else if (actionType == UIActionType::CANCELED) _sc->setupForAction(new TOMainMenuAction());
 }
 
 TOMoneyInsertInsertedAction::TOMoneyInsertInsertedAction(): Action(ActionType::TO_MONEY_INSERT_INESERTED) {
 	_message = "Введені купюри успішно вставлені";
     _actionsLabels = QList<QString>() << "Ок";
 }
+void TOMoneyInsertInsertedAction::beforeAction() {
+	_uc->printMessage(_message, _actionsLabels);
+	_sc->showReceipt(QString("Сховище купюр успішно поповнено купюрами"));
+}
 void TOMoneyInsertInsertedAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED) _sc->setupForAction(new TOMainMenuAction());
 }
-
 
 TOWorkFinishedAction::TOWorkFinishedAction(): Action(ActionType::TO_WORK_FINISHED) {
 	_message = "Закінчуємо роботу в режимі технічного спеціаліста. Банкомат переходить в звичайний режим";
@@ -191,4 +204,3 @@ void TOWorkFinishedAction::actionPerformed(UIActionType actionType, const QStrin
     if (actionType == UIActionType::ACTION_CLICKED)
 		_sc->reset(false);
 }
-

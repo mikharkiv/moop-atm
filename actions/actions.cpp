@@ -47,6 +47,7 @@ UserMenuAction::UserMenuAction(): Action(ActionType::USER_MENU) {
 	_message = "Меню користувача\nВиберіть потрібну дію:";
 	_actionsLabels = QList<QString>() << "Видача готівки" << "Поповнення балансу" << "Переказ коштів" << "Дізнатись баланс"
  << "Зміна ПІН" << "Завершити роботу";
+	_canCancel = true;
 }
 void UserMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED) {
@@ -59,7 +60,8 @@ void UserMenuAction::actionPerformed(UIActionType actionType, const QString &par
 			case 4: _sc->setupForAction(new PinChangedAction()); break;
 			case 5: _sc->setupForAction(new WorkFinishedAction()); break;
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new WorkFinishedAction());
 }
 
 GetCashAction::GetCashAction(): Action(ActionType::CASH_WITHDRAWAL_MENU) {
@@ -98,7 +100,7 @@ NoBalanceAction::NoBalanceAction(): Action(ActionType::CASH_WITHDRAWAL_NO_BALANC
 }
 void NoBalanceAction::beforeAction() {
 	_uc->printMessage(_message, _actionsLabels);
-	_uc->showReceipt("Спроба зняти кошти з картки. Помилка: бракує коштів");
+	_sc->showReceipt("Спроба зміни балансу на картці. Помилка: бракує коштів");
 }
 void NoBalanceAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED)
@@ -111,7 +113,7 @@ CashGivenAction::CashGivenAction(): Action(ActionType::CASH_WITHDRAWAL_WITHDRAWE
 }
 void CashGivenAction::beforeAction() {
 	_uc->printMessage(_message, _actionsLabels);
-	_uc->showReceipt(QString("З картки було знято %1 грн").arg(_sc->takeFromMemory()));
+	_sc->showReceipt(QString("З картки було знято %1 грн").arg(_sc->takeFromMemory()));
 }
 void CashGivenAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED)
@@ -148,6 +150,7 @@ void BalanceToppedUpAction::actionPerformed(UIActionType actionType, const QStri
 MoneyTransferFirstAction::MoneyTransferFirstAction(): Action(ActionType::MONEY_TRANSFER_MENU1) {
 	_message = "Введіть необхідну суму";
 	_canType = true;
+	_canCancel = true;
 }
 void MoneyTransferFirstAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
@@ -165,6 +168,7 @@ void MoneyTransferFirstAction::actionPerformed(UIActionType actionType, const QS
 MoneyTransferSecondAction::MoneyTransferSecondAction(): Action(ActionType::MONEY_TRANSFER_MENU2) {
 	_message = "Введіть номер картки";
 	_canType = true;
+	_canCancel = true;
 }
 void MoneyTransferSecondAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
@@ -177,6 +181,7 @@ void MoneyTransferSecondAction::actionPerformed(UIActionType actionType, const Q
 			_sc->setupForAction(new MoneyTransferedAction());
 		}
 	}  else if (actionType == UIActionType::CANCELED) {
+		_sc->takeFromMemory();
 		_sc->setupForAction(new UserMenuAction());
 	}
 }
@@ -205,7 +210,7 @@ BalancePrintedAction::BalancePrintedAction(): Action(ActionType::GET_BALANCE_PRI
 }
 void BalancePrintedAction::beforeAction() {
 	_uc->printMessage(_message, _actionsLabels);
-	_uc->showReceipt(QString("Баланс по картці: %1").arg(QString::number(_sc->getBalance())));
+	_sc->showReceipt(QString("Баланс по картці: %1").arg(QString::number(_sc->getBalance())));
 }
 void BalancePrintedAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED)
@@ -218,7 +223,7 @@ PinChangedAction::PinChangedAction(): Action(ActionType::PIN_CHANGE_PRINTED) {
 }
 void PinChangedAction::beforeAction() {
 	_uc->printMessage(_message, _actionsLabels);
-	_uc->showReceipt(QString("НІКОМУ НЕ ПОКАЗУЙТЕ ЦЕЙ ЧЕК\nОДРАЗУ ЗНИЩТЕ ЙОГО\n\nВаш новий ПІН:\n%1").arg(_sc->changePIN()));
+	_sc->showReceipt(QString("НІКОМУ НЕ ПОКАЗУЙТЕ ЦЕЙ ЧЕК\nОДРАЗУ ЗНИЩТЕ ЙОГО\n\nВаш новий ПІН:\n%1").arg(_sc->changePIN()));
 }
 void PinChangedAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED)

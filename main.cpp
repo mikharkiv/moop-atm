@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     ATMMainWindow w;
     w.show();
 
+	// money in the ATM
     QMap<int, int> money;
     money[1000] = 1;
     money[500] = 1;
@@ -23,8 +24,7 @@ int main(int argc, char *argv[])
     money[5] = 2;
     money[2] = 10;
 
-    QList<QString> knowedCards;
-    knowedCards << "1234";
+	QList<QString> knowedCards;
 
     ATM atm(&w, 0, "Kyiv", money, knowedCards);
     return a.exec();
