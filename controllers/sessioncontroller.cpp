@@ -200,6 +200,7 @@ void SessionController::addBalance(int sum)
 
 void SessionController::giveCash(int sum)
 {
+	_atm->subtractBalance(sum, _currCard);
 	_atm->withdrawBanknotes(sum);
 }
 
