@@ -112,7 +112,7 @@ void AccountTest::pin()
     QCOMPARE(pin4.value(), true);
 
     auto pin5 = _bank->checkPin("1114", "2345");
-    QCOMPARE(pin4.value(), true);
+    QCOMPARE(pin5.value(), false);
 }
 
 void AccountTest::block()
