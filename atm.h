@@ -33,6 +33,9 @@ public:
 	void blockCard(const QString& card);
 	void unblockCard(const QString& card);
 
+	const QString getLocation();
+	int getId();
+
 private:
 	Bank* _bank;
 	LocalMediator* _mediator;

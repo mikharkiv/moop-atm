@@ -1,9 +1,6 @@
 #include "bank.h"
 
-Bank::Bank(QString dbPath) : _db(DBController(dbPath))
-{
-
-}
+Bank::Bank(QString dbPath) : _db(DBController(dbPath)) {}
 
 BankResponse<Account> Bank::getAccount(QString id)
 {

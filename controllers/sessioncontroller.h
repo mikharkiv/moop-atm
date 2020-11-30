@@ -47,6 +47,7 @@ public slots:
 	void onCardChosen(QString& cardNumber);
 	void onCancelClicked();
 	void onActionClicked(int id);
+	void showReceipt(const QString& message);
 
 private:
 	UIController* _uc;

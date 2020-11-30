@@ -4,29 +4,15 @@
 
 
 TOMenuAction::TOMenuAction(): Action(ActionType::TO_MENU) {_isPinRestricted = true;}
-TOMenuAction::~TOMenuAction() {}
 void TOMenuAction::beforeAction() {
 	_sc->setupForAction(new TOMainMenuAction());
-}
-void TOMenuAction::afterAction() {}
-void TOMenuAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-	beforeAction();
 }
 void TOMenuAction::actionPerformed(UIActionType actionType, const QString &param) {}
 
 TOMainMenuAction::TOMainMenuAction(): Action(ActionType::TO_MAIN_MENU) {
     _message = "Меню технічого спеціаліста.\nВиберіть операцію:";
-	_actionsLabels = QList<QString>() << "Створити нову картку" << "Заблокувати картку" << "Розблокувати картку" << "Вийти з режиму ТО";
-}
-TOMainMenuAction::~TOMainMenuAction() {}
-void TOMainMenuAction::beforeAction() {
-	_uc->printMessage(_message, _actionsLabels);
-}
-void TOMainMenuAction::afterAction() {}
-void TOMainMenuAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
+	_actionsLabels = QList<QString>() << "Створити нову картку" << "Заблокувати картку" << "Розблокувати картку" << "Поповнити сховище купюр" << "Вийти з режиму ТО";
+	_canCancel = true;
 }
 void TOMainMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::ACTION_CLICKED) {
@@ -35,24 +21,19 @@ void TOMainMenuAction::actionPerformed(UIActionType actionType, const QString &p
 			case 0: _sc->setupForAction(new TONewCardMenuAction()); break;
 			case 1: _sc->setupForAction(new TOCardBlockMenuAction()); break;
 			case 2: _sc->setupForAction(new TOCardUnblockMenuAction()); break;
-			case 3: _sc->setupForAction(new TOWorkFinishedAction()); break;
+			case 3: _sc->setupForAction(new TOMoneyInsertMenuAction()); break;
+			case 4: _sc->setupForAction(new TOWorkFinishedAction()); break;
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOWorkFinishedAction());
 }
 
 TONewCardMenuAction::TONewCardMenuAction(): Action(ActionType::TO_NEW_CARD_MENU) {
     _message = "Введіть номер картки:";
-    _canType = true;
+	_canType = true;
+	_canCancel = true;
 }
-TONewCardMenuAction::~TONewCardMenuAction() {}
-void TONewCardMenuAction::beforeAction() {
-    _uc->printMessage(_message);
-}
-void TONewCardMenuAction::afterAction() {}
-void TONewCardMenuAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
-}
+
 void TONewCardMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
 		if (_sc->checkCardExists(param)) {
@@ -61,22 +42,13 @@ void TONewCardMenuAction::actionPerformed(UIActionType actionType, const QString
 			_sc->placeToMemory(param);
 			_sc->setupForAction(new TONewCardCreatedAction());
 		}
-	}
-
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOMainMenuAction());
 }
 
 TONewCardExistsAction::TONewCardExistsAction(): Action(ActionType::TO_NEW_CARD_EXISTS) {
 	_message = "Картка вже існує. Спробуйте іншу";
     _actionsLabels = QList<QString>() << "Ок";
-}
-TONewCardExistsAction::~TONewCardExistsAction() {}
-void TONewCardExistsAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TONewCardExistsAction::afterAction() {}
-void TONewCardExistsAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
 }
 void TONewCardExistsAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
@@ -87,15 +59,9 @@ TONewCardCreatedAction::TONewCardCreatedAction(): Action(ActionType::TO_NEW_CARD
 	_message = "Картку успішно створено. ПІН надруковано на чеку";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TONewCardCreatedAction::~TONewCardCreatedAction() {}
 void TONewCardCreatedAction::beforeAction() {
-	_uc->showReceipt(QString("ПІН: %1").arg(_sc->createCard(_sc->takeFromMemory())));
+	_sc->showReceipt(QString("Створено нову картку\nПІН: %1").arg(_sc->createCard(_sc->takeFromMemory())));
     _uc->printMessage(_message, _actionsLabels);
-}
-void TONewCardCreatedAction::afterAction() {}
-void TONewCardCreatedAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
 }
 void TONewCardCreatedAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
@@ -105,15 +71,7 @@ void TONewCardCreatedAction::actionPerformed(UIActionType actionType, const QStr
 TOCardBlockMenuAction::TOCardBlockMenuAction(): Action(ActionType::TO_CARD_BLOCK_MENU) {
 	_message = "Введіть номер картки для блокування";
 	_canType = true;
-}
-TOCardBlockMenuAction::~TOCardBlockMenuAction() {}
-void TOCardBlockMenuAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOCardBlockMenuAction::afterAction() {}
-void TOCardBlockMenuAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
+	_canCancel = true;
 }
 void TOCardBlockMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
@@ -127,21 +85,13 @@ void TOCardBlockMenuAction::actionPerformed(UIActionType actionType, const QStri
 			_sc->placeToMemory(param);
 			_sc->setupForAction(new TOCardBlockBlockedAction());
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOMainMenuAction());
 }
 
 TOCardBlockNotExistsAction::TOCardBlockNotExistsAction(): Action(ActionType::TO_CARD_BLOCK_NOT_EXISTS) {
 	_message = "Картки не існує. Спробуйте іншу";
     _actionsLabels = QList<QString>() << "Ок";
-}
-TOCardBlockNotExistsAction::~TOCardBlockNotExistsAction() {}
-void TOCardBlockNotExistsAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOCardBlockNotExistsAction::afterAction() {}
-void TOCardBlockNotExistsAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
 }
 void TOCardBlockNotExistsAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
@@ -152,15 +102,6 @@ TOCardBlockAlreadyBlockedAction::TOCardBlockAlreadyBlockedAction(): Action(Actio
 	_message = "Картка вже заблокована";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOCardBlockAlreadyBlockedAction::~TOCardBlockAlreadyBlockedAction() {}
-void TOCardBlockAlreadyBlockedAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOCardBlockAlreadyBlockedAction::afterAction() {}
-void TOCardBlockAlreadyBlockedAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
-}
 void TOCardBlockAlreadyBlockedAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
 		_sc->setupForAction(new TOMainMenuAction());
@@ -170,17 +111,11 @@ TOCardBlockBlockedAction::TOCardBlockBlockedAction(): Action(ActionType::TO_CARD
 	_message = "Введену картку успішно заблоковано";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOCardBlockBlockedAction::~TOCardBlockBlockedAction() {}
 void TOCardBlockBlockedAction::beforeAction() {
     _uc->printMessage(_message, _actionsLabels);
 	QString c = _sc->takeFromMemory();
 	_sc->blockCard(c);
-	_uc->showReceipt(QString("Заблоковано картку: %1").arg(c));
-}
-void TOCardBlockBlockedAction::afterAction() {}
-void TOCardBlockBlockedAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
+	_sc->showReceipt(QString("Заблоковано картку: %1").arg(c));
 }
 void TOCardBlockBlockedAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
@@ -191,15 +126,6 @@ TOCardBlockExpiredAction::TOCardBlockExpiredAction(): Action(ActionType::TO_CARD
 	_message = "Термін дії введеної картки сплив. Спробуйте іншу";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOCardBlockExpiredAction::~TOCardBlockExpiredAction() {}
-void TOCardBlockExpiredAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOCardBlockExpiredAction::afterAction() {}
-void TOCardBlockExpiredAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
-}
 void TOCardBlockExpiredAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
 		_sc->setupForAction(new TOMainMenuAction());
@@ -208,15 +134,7 @@ void TOCardBlockExpiredAction::actionPerformed(UIActionType actionType, const QS
 TOCardUnblockMenuAction::TOCardUnblockMenuAction(): Action(ActionType::TO_CARD_UNBLOCK_MENU) {
 	_message = "Введіть номер картки для розблокування";
 	_canType = true;
-}
-TOCardUnblockMenuAction::~TOCardUnblockMenuAction() {}
-void TOCardUnblockMenuAction::beforeAction() {
-	_uc->printMessage(_message);
-}
-void TOCardUnblockMenuAction::afterAction() {}
-void TOCardUnblockMenuAction::setupForUI(UIController *uc, SessionController *sc) {
-    Action::setupUI(uc, sc);
-    beforeAction();
+	_canCancel = true;
 }
 void TOCardUnblockMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
 	if (actionType == UIActionType::INPUT) {
@@ -230,100 +148,59 @@ void TOCardUnblockMenuAction::actionPerformed(UIActionType actionType, const QSt
 			_sc->placeToMemory(param);
 			_sc->setupForAction(new TOCardUnblockUnblockedAction());
 		}
-	}
+	} else if (actionType == UIActionType::CANCELED)
+		_sc->setupForAction(new TOMainMenuAction());
 }
 
 TOCardUnblockNotBlockedAction::TOCardUnblockNotBlockedAction(): Action(ActionType::TO_CARD_UNBLOCK_NOT_BLOCKED) {
 	_message = "Введену картку не заблоковано. Спробуйте іншу";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOCardUnblockNotBlockedAction::~TOCardUnblockNotBlockedAction() {}
-void TOCardUnblockNotBlockedAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOCardUnblockNotBlockedAction::afterAction() {}
-void TOCardUnblockNotBlockedAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
-}
 void TOCardUnblockNotBlockedAction::actionPerformed(UIActionType actionType, const QString &param) {
-    if (actionType == UIActionType::ACTION_CLICKED)
-		_sc->setupForAction(new TOMainMenuAction());
+	if (actionType == UIActionType::ACTION_CLICKED)	_sc->setupForAction(new TOMainMenuAction());
 }
 
 TOCardUnblockUnblockedAction::TOCardUnblockUnblockedAction(): Action(ActionType::TO_CARD_UNBLOCK_UNBLOCKED) {
 	_message = "Введену картку успішно розблоковано";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOCardUnblockUnblockedAction::~TOCardUnblockUnblockedAction() {}
 void TOCardUnblockUnblockedAction::beforeAction() {
     _uc->printMessage(_message, _actionsLabels);
 	QString c = _sc->takeFromMemory();
 	_sc->unblockCard(c);
-	_uc->showReceipt(QString("Картку розблоковано: %1").arg(c));
-}
-void TOCardUnblockUnblockedAction::afterAction() {}
-void TOCardUnblockUnblockedAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
+	_sc->showReceipt(QString("Картку розблоковано: %1").arg(c));
 }
 void TOCardUnblockUnblockedAction::actionPerformed(UIActionType actionType, const QString &param) {
-    if (actionType == UIActionType::ACTION_CLICKED)
-		_sc->setupForAction(new TOMainMenuAction());
+	if (actionType == UIActionType::ACTION_CLICKED) _sc->setupForAction(new TOMainMenuAction());
 }
 
 TOMoneyInsertMenuAction::TOMoneyInsertMenuAction(): Action(ActionType::TO_MONEY_INSERT_MENU) {
 	_message = "Вставте купюри в купюроприймач";
 	_canInsertMoney = true;
-}
-TOMoneyInsertMenuAction::~TOMoneyInsertMenuAction() {}
-void TOMoneyInsertMenuAction::beforeAction() {
-	_uc->printMessage(_message);
-}
-void TOMoneyInsertMenuAction::afterAction() {}
-void TOMoneyInsertMenuAction::setupForUI(UIController *uc, SessionController *sc) {
-	Action::setupUI(uc, sc);
-    beforeAction();
+	_canCancel = true;
 }
 void TOMoneyInsertMenuAction::actionPerformed(UIActionType actionType, const QString &param) {
-	if (actionType == UIActionType::MONEY_INSERTED)
-		_sc->setupForAction(new TOMoneyInsertInsertedAction());
+	if (actionType == UIActionType::MONEY_INSERTED) _sc->setupForAction(new TOMoneyInsertInsertedAction());
+	else if (actionType == UIActionType::CANCELED) _sc->setupForAction(new TOMainMenuAction());
 }
 
 TOMoneyInsertInsertedAction::TOMoneyInsertInsertedAction(): Action(ActionType::TO_MONEY_INSERT_INESERTED) {
 	_message = "Введені купюри успішно вставлені";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOMoneyInsertInsertedAction::~TOMoneyInsertInsertedAction() {}
 void TOMoneyInsertInsertedAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOMoneyInsertInsertedAction::afterAction() {}
-void TOMoneyInsertInsertedAction::setupForUI(UIController *uc, SessionController *sc) {
-    Action::setupUI(uc, sc);
-    beforeAction();
+	_uc->printMessage(_message, _actionsLabels);
+	_sc->showReceipt(QString("Сховище купюр успішно поповнено купюрами"));
 }
 void TOMoneyInsertInsertedAction::actionPerformed(UIActionType actionType, const QString &param) {
-    if (actionType == UIActionType::ACTION_CLICKED)
-		_sc->setupForAction(new TOMainMenuAction());
+	if (actionType == UIActionType::ACTION_CLICKED) _sc->setupForAction(new TOMainMenuAction());
 }
-
 
 TOWorkFinishedAction::TOWorkFinishedAction(): Action(ActionType::TO_WORK_FINISHED) {
 	_message = "Закінчуємо роботу в режимі технічного спеціаліста. Банкомат переходить в звичайний режим";
     _actionsLabels = QList<QString>() << "Ок";
 }
-TOWorkFinishedAction::~TOWorkFinishedAction() {}
-void TOWorkFinishedAction::beforeAction() {
-    _uc->printMessage(_message, _actionsLabels);
-}
-void TOWorkFinishedAction::afterAction() {}
-void TOWorkFinishedAction::setupForUI(UIController *uc, SessionController *sc) {
-    Action::setupUI(uc, sc);
-    beforeAction();
-}
 void TOWorkFinishedAction::actionPerformed(UIActionType actionType, const QString &param) {
     if (actionType == UIActionType::ACTION_CLICKED)
 		_sc->reset(false);
 }
-

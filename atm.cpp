@@ -135,3 +135,13 @@ void ATM::unblockCard(const QString &card)
 {
 	_mediator->unblock(card);
 }
+
+const QString ATM::getLocation()
+{
+	return _location;
+}
+
+int ATM::getId()
+{
+	return _id;
+}

@@ -1,13 +1,8 @@
 #include "localmediator.h"
 
-LocalMediator::LocalMediator(QSharedPointer<Bank> bank) : _bank(bank)
-{
+LocalMediator::LocalMediator(QSharedPointer<Bank> bank) : _bank(bank) {}
 
-}
-
-LocalMediator::~LocalMediator()
-{
-}
+LocalMediator::~LocalMediator() {}
 
 BankResponse<Account> LocalMediator::doGetAccount(QString id)
 {
