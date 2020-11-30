@@ -86,6 +86,12 @@ void AccountTest::balance()
 
     auto balance2 = _bank->getAccount("1113");
     QCOMPARE(balance2.value().balance(), 17.35);
+
+    auto witdraw3 = _bank->withdraw("1113", -100);
+    QCOMPARE(witdraw3.status(), ERROR);
+
+    auto top_up3 = _bank->top_up("1113", -100);
+    QCOMPARE(top_up3.status(), ERROR);
 }
 
 void AccountTest::pin()

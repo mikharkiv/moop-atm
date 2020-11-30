@@ -19,6 +19,8 @@ BankResponse<ResponseStatus> Bank::createAccount(const Account &acc)
 
 BankResponse<double> Bank::withdraw(QString id, const double amount)
 {
+    if (amount <= 0)
+        return BankResponse<double>(ERROR);
     try {
         Account acc = _db.getAccount(id);
         double bal = acc.balance();
@@ -39,6 +41,8 @@ BankResponse<double> Bank::withdraw(QString id, const double amount)
 
 BankResponse<double> Bank::top_up(QString id, const double amount)
 {
+    if (amount <= 0)
+        return BankResponse<double>(ERROR);
     try {
         Account acc = _db.getAccount(id);
         if (QDateTime::currentDateTime().daysTo(acc.expirationDate()) <= 0)
