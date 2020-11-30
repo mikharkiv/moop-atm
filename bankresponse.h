@@ -2,7 +2,7 @@
 #define BANKRESPONSE_H
 
 enum ResponseStatus {
-    OK, NOT_FOUND, ERROR, NOT_ENOUGH, BLOCKED
+    OK, NOT_FOUND, ERROR, NOT_ENOUGH, BLOCKED, EXPIRED
 };
 
 template<class Value>

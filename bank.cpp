@@ -25,6 +25,8 @@ BankResponse<double> Bank::withdraw(QString id, const double amount)
     try {
         Account acc = _db.getAccount(id);
         double bal = acc.balance();
+        if (QDateTime::currentDateTime().daysTo(acc.expirationDate()) <= 0)
+            return BankResponse<double>(EXPIRED);
         if (acc.blocked())
             return BankResponse<double>(BLOCKED);
         if (bal < amount)
@@ -42,6 +44,8 @@ BankResponse<double> Bank::top_up(QString id, const double amount)
 {
     try {
         Account acc = _db.getAccount(id);
+        if (QDateTime::currentDateTime().daysTo(acc.expirationDate()) <= 0)
+            return BankResponse<double>(EXPIRED);
         if (acc.blocked())
             return BankResponse<double>(BLOCKED);
         double bal = acc.balance();
